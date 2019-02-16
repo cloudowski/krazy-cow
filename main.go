@@ -7,6 +7,10 @@ import (
 
 var c cow
 
+func init() {
+	log.Printf("%s version %s initialized", APPNAME, VERSION)
+}
+
 func main() {
 	// c := cow{0}
 

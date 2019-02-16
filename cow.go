@@ -10,6 +10,7 @@ type cow struct {
 	replies int
 }
 
+// v----------
 const asciicow string = `
            (    )
             (oo)
@@ -22,11 +23,10 @@ const asciicow string = `
 
 func (c *cow) say(w http.ResponseWriter, r *http.Request) {
 
-	msg := "Moooo"
+	msg := fmt.Sprintf("\"%s\"", "Mooo")
 	c.replies++
 	ua := r.UserAgent()
 	log.Printf("%v requested: %v host: %v, user-agent: %s", c.replies, r.RequestURI, r.RemoteAddr, ua)
-	// w.Write([]byte(msg))
-	fmt.Fprintln(w, msg, asciicow)
+	fmt.Fprintf(w, "%24s %s", msg, asciicow)
 
 }
