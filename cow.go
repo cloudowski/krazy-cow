@@ -22,7 +22,7 @@ const asciicow string = `
 
 func (c *cow) say(w http.ResponseWriter, r *http.Request) {
 
-	msg := fmt.Sprintf("\"%s\"", "Mooo")
-	fmt.Fprintf(w, "%24s %s", msg, asciicow)
+	msg := fmt.Sprintf("\"%s\"", cowconf.Get("cow.say"))
+	fmt.Fprintf(w, "%15s %s %s", " ", msg, asciicow)
 
 }
