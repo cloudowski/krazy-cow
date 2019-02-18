@@ -10,18 +10,20 @@ spec:
         app: redis-persistent
     spec:
       containers:
-      - name: redis
-        image: redis:5-alpine
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 6379
-        volumeMounts:
-        - mountPath: /data
-          name: data
+        - name: redis
+          image: redis:5-alpine
+          args:
+            ["--appendonly", "yes", "--save", "900", "1", "--save", "30", "2"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 6379
+          volumeMounts:
+            - mountPath: /data
+              name: data
       volumes:
-      - name: data
-        persistentVolumeClaim:
-          claimName: redis
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis
 ---
 apiVersion: v1
 kind: Service
@@ -29,8 +31,8 @@ metadata:
   name: redis
 spec:
   ports:
-  - port: 6379 
-    name: redis
+    - port: 6379
+      name: redis
   selector:
     app: redis-persistent
 ---
