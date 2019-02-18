@@ -43,10 +43,10 @@ func (c *cow) say(w http.ResponseWriter, r *http.Request) {
 
 func (c *cow) setfree(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf(w, "Moooooooo! (cow %s bas been set free)", c.name)
+	fmt.Fprintf(w, "Moooooooo! (cow %s has been set free)", c.name)
 	go func() {
 		time.Sleep(time.Second * 3)
-		log.Fatalln("Cow has been set free")
+		log.Fatalln("Cow has been set free!")
 	}()
 
 }
