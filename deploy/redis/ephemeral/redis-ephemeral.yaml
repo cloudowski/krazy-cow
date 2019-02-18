@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: redis-ephemeral
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: redis-ephemeral
+    spec:
+      containers:
+      - name: redis
+        image: redis:5-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  ports:
+  - port: 6379 
+    name: redis
+  selector:
+    app: redis-ephemeral
