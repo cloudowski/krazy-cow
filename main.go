@@ -12,7 +12,9 @@ var c cow
 var cowconf *viper.Viper
 
 func init() {
-	log.Printf("%s version %s initialized", APPNAME, VERSION)
+	c.init()
+
+	log.Printf("cow %s (%s version %s) initialized", c.name, APPNAME, VERSION)
 
 	cowconf = viper.New()
 
@@ -33,6 +35,7 @@ func init() {
 func main() {
 
 	http.HandleFunc("/", logging(c.say))
+	http.HandleFunc("/setfree", logging(c.setfree))
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
