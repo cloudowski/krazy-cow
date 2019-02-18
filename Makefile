@@ -7,13 +7,16 @@ VERSION?=latest
 
 all: clean build
 
-.PHONY: build tinybuild run runfg clean push kill
+.PHONY: build buildimg buildimgtiny run runfg clean push kill
 default: build
 
-build: 
-	docker build -t $(NAME):$(VERSION) .
+build:
+	go build -o cow *.go
 
-tinybuild: 
+buildimg: 
+	docker build -t $(NAME):$(VERSION) -f Dockerfile .
+
+buildimgtiny: 
 	docker build -f Dockerfile.slim -t $(NAME):$(VERSION) .
 
 push: tinybuild

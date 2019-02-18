@@ -1,11 +1,17 @@
+# build stage
 FROM golang:alpine AS build-env
-ADD . /src
-WORKDIR /src
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o goapp
+RUN apk add --no-cache git
+WORKDIR $GOPATH/src/trapped-cow
+COPY . .
+COPY cowconfig.yaml /app/
+
+
+RUN go get -v -d
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /app/goapp
 
 FROM scratch
 WORKDIR /app
-COPY --from=build-env /src/goapp /app/
+COPY --from=build-env /app/* .
 EXPOSE 8080
 USER 1001
 ENTRYPOINT [ "/app/goapp" ]
