@@ -12,8 +12,7 @@ spec:
       containers:
         - name: redis
           image: redis:5-alpine
-          args:
-            ["--appendonly", "yes", "--save", "900", "1", "--save", "30", "2"]
+          args: ["--appendonly", "yes"]
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
