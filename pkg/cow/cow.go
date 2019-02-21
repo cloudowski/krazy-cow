@@ -1,4 +1,4 @@
-package main
+package cow
 
 import (
 	"fmt"
@@ -8,12 +8,11 @@ import (
 	"time"
 )
 
-type cow struct {
-	requests int
-	name     string
+type Cow struct {
+	Requests int
+	Name     string
 }
 
-// v----------
 const asciicow string = `
            (    )
             (oo)
@@ -24,26 +23,27 @@ const asciicow string = `
      "     " "
 `
 
-func (c *cow) init() {
+func (c *Cow) Init() {
 
 	if name, err := os.Hostname(); err != nil {
 		log.Fatalln("Failed to get cow name (read hostname)")
 	} else {
-		c.name = name
+		c.Name = name
 	}
 
 }
 
-func (c *cow) say(w http.ResponseWriter, r *http.Request) {
+func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 
-	msg := fmt.Sprintf("\"%s\"", cowconf.Get("cow.say"))
+	// msg := fmt.Sprintf("\"%s\"", cowconf.Get("cow.say"))
+	msg := fmt.Sprintf("\"%s\"", "Mooo - FIXME to use config")
 	fmt.Fprintf(w, "%15s %s %s", " ", msg, asciicow)
 
 }
 
-func (c *cow) setfree(w http.ResponseWriter, r *http.Request) {
+func (c *Cow) SetFree(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf(w, "Moooooooo! (cow %s has been set free)", c.name)
+	fmt.Fprintf(w, "Moooooooo! (cow %s has been set free)", c.Name)
 	go func() {
 		time.Sleep(time.Second * 3)
 		log.Fatalln("Cow has been set free!")

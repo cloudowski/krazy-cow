@@ -19,7 +19,7 @@ buildimg:
 buildimgtiny: 
 	docker build -f Dockerfile.slim -t $(NAME):$(VERSION) .
 
-push: tinybuild
+push: 
 	docker push $(NAME):$(VERSION)
 
 run: 
