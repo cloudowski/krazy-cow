@@ -44,6 +44,7 @@ func init() {
 	log.Printf("Config: %v", cowconf.AllSettings())
 
 	c.SetMood(cowconf.GetInt("cow.initmood"))
+	c.SetSay(cowconf.GetString("cow.say"))
 
 	if cowconf.GetBool("cow.moodchanger.enabled") {
 		go c.MoodChanger(cowconf.GetInt("cow.moodchanger.interval"), cowconf.GetInt("cow.moodchanger.change"))

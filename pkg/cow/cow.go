@@ -15,6 +15,7 @@ type Cow struct {
 	Requests int
 	Name     string
 	mood     int
+	say      string
 }
 
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
@@ -51,10 +52,17 @@ func (c *Cow) GetMood() int {
 	return c.mood
 }
 
+func (c *Cow) SetSay(say string) {
+	c.say = say
+}
+
+func (c *Cow) GetSay() string {
+	return c.say
+}
+
 func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 
-	// msg := fmt.Sprintf("\"%s\"", cowconf.Get("cow.say"))
-	msg := fmt.Sprintf("\"%s\"", "Mooo - FIXME to use config")
+	msg := fmt.Sprintf("\"%s\"", c.GetSay())
 	fmt.Fprintf(w, "%15s %s %s", " ", msg, asciicow)
 
 }

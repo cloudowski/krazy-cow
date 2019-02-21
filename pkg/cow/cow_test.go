@@ -1,6 +1,7 @@
 package cow
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -39,7 +40,6 @@ func TestHealthcheck(t *testing.T) {
 
 }
 
-// TODO - fix after resolving issues with reading conf from cow
 func TestSay(t *testing.T) {
 
 	cowname := "testcow"
@@ -49,9 +49,11 @@ func TestSay(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	rr := httptest.NewRecorder()
+	c := &Cow{Name: cowname}
+	s := "I am a test cow"
+	c.SetSay(s)
 
-	c := Cow{Name: cowname}
+	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(c.Say)
 
 	handler.ServeHTTP(rr, req)
@@ -60,8 +62,7 @@ func TestSay(t *testing.T) {
 		t.Errorf("Expected http code %v, got %v", http.StatusOK, rr.Code)
 	}
 
-	// cowregex := fmt.Sprintf("\"%v\"", cowname)
-	cowregex := "FIXME"
+	cowregex := fmt.Sprintf("\"%v\"", s)
 	r, _ := regexp.Compile(cowregex)
 
 	if !r.MatchString(rr.Body.String()) {
