@@ -1,20 +1,24 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
+	cow "gitlab.com/cloudowski/trapped-cow/pkg/cow"
+	"gitlab.com/cloudowski/trapped-cow/pkg/shepherd"
 )
 
-var c cow
+var c cow.Cow
 var cowconf *viper.Viper
 
 func init() {
-	c.init()
+	c.Init()
 
-	log.Printf("cow %s (%s version %s) initialized", c.name, APPNAME, VERSION)
+	log.Printf("cow %s (%s version %s) initialized", c.Name, APPNAME, VERSION)
 
 	cowconf = viper.New()
 
@@ -34,8 +38,9 @@ func init() {
 
 func main() {
 
-	http.HandleFunc("/", logging(c.say))
-	http.HandleFunc("/setfree", logging(c.setfree))
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/", logging(c.Say))
+	http.HandleFunc("/setfree", logging(c.SetFree))
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
@@ -44,10 +49,11 @@ func main() {
 func logging(h http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		c.requests++
+		c.Requests++
 		ua := r.UserAgent()
 
-		log.Printf("%v requested: %v host: %v, user-agent: %s", c.requests, r.RequestURI, r.RemoteAddr, ua)
+		log.Printf("%v requested: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, ua)
+		shepherd.SendStats(c.Name, fmt.Sprintf("%v %v %v", r.RequestURI, r.RemoteAddr, ua))
 		h(w, r)
 	}
 

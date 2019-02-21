@@ -20,6 +20,7 @@ spec:
 
       containers:
         - image: cloudowski/trapped-cow:latest
+          imagePullPolicy: Always
           name: cow
 
           # livenessProbe:

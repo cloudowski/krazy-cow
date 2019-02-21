@@ -1,0 +1,21 @@
+image: docker:git
+
+services:
+  - docker:dind
+
+# variables:
+#   DOCKER_DRIVER: overlay2
+#   CONTAINER_IMAGE: registry.gitlab.com/codebabel/$CI_PROJECT_NAME #Workaround https://gitlab.com/gitlab-org/gitlab-ce/issues/23339
+
+before_script:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+
+stages:
+  - build and publish
+
+job 1:
+  stage: build and publish
+  script:
+    # - make buildimg
+    - docker build -t cloudowski/trapped-cow .
+    - docker push cloudowski/trapped-cow
