@@ -5,5 +5,8 @@ cow:
         enabled: false
         interval: 5
         change: -1
+    pasture:
+        path: /pasture
+        interval: 5
 logging:
     requests: true

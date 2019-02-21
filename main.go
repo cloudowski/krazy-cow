@@ -23,9 +23,7 @@ func init() {
 	cowconf = viper.New()
 
 	cowconf.SetEnvPrefix("TC")
-	cowconf.AutomaticEnv()
-	cowconf.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // replace "." with "_" for nested keys
-	cowconf.SetConfigName("defaultconfig")                   // name of config file (without extension)
+	cowconf.SetConfigName("defaultconfig") // name of config file (without extension)
 	cowconf.AddConfigPath(".")
 	err := cowconf.ReadInConfig() // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
@@ -39,6 +37,10 @@ func init() {
 
 	cowconf.SetDefault("cow.say", "Mooo")
 	cowconf.SetDefault("logging.requests", false)
+
+	cowconf.AutomaticEnv()
+	cowconf.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // replace "." with "_" for nested keys
+
 	log.Printf("Config: %v", cowconf.AllSettings())
 
 	c.SetMood(cowconf.GetInt("cow.initmood"))
@@ -46,6 +48,7 @@ func init() {
 	if cowconf.GetBool("cow.moodchanger.enabled") {
 		go c.MoodChanger(cowconf.GetInt("cow.moodchanger.interval"), cowconf.GetInt("cow.moodchanger.change"))
 	}
+	go c.Grass(cowconf.GetString("cow.pasture.path"), cowconf.GetInt("cow.pasture.interval"))
 }
 
 func main() {

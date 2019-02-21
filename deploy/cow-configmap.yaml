@@ -9,7 +9,10 @@ data:
       initmood: 22
       moodchanger:
         enabled: true
-        interval: 3
+        interval: 2
         change: -1
+      pasture:
+        path: /pasture
+        interval: 3
     logging:
       requests: true

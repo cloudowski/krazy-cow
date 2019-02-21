@@ -46,7 +46,20 @@ spec:
           volumeMounts:
             - name: cow-config
               mountPath: /config/
+            - name: pasture
+              mountPath: /pasture
+
+      initContainers:
+        - name: pasture
+          image: busybox
+          command:
+            ["sh", "-c", "for i in `seq 1 20`;do touch /pasture/tuft$i;done"]
+          volumeMounts:
+            - name: pasture
+              mountPath: /pasture
+
       volumes:
         - name: cow-config
           configMap:
             name: cow-config
+        - name: pasture
