@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cow-config
+data:
+  cowconfig.yaml: |
+    cow:
+      say: "Moooooo, I'm a cow CONTAINER"
+      initmood: 22
+      moodchanger:
+        enabled: true
+        interval: 3
+        change: -1
+    logging:
+      requests: true

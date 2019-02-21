@@ -1,0 +1,9 @@
+cow:
+    say: "Moooooo, I'm a cow"
+    initmood: 20
+    moodchanger:
+        enabled: false
+        interval: 5
+        change: -1
+logging:
+    requests: true

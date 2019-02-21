@@ -23,30 +23,30 @@ spec:
           imagePullPolicy: Always
           name: cow
 
-          # livenessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 8080
-          #   initialDelaySeconds: 5
-          #   periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              # path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
 
-          # readinessProbe:
-          #   httpGet:
-          #     path: /healthz
-          #     port: 8080
-          #   initialDelaySeconds: 5
-          #   periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 2
 
           ports:
             - containerPort: 8080
               name: http
-      #   envFrom:
-      #   - configMapRef:
-      #       name: cow-config
-      #   volumeMounts:
-      #   - name: cow-secret
-      #     mountPath: /run/secrets/cow
-      # volumes:
-      # - name: cow-secret
-      #   secret:
-      #     secretName: pets-admin-password
+          volumeMounts:
+            - name: cow-config
+              mountPath: /config/
+      volumes:
+        - name: cow-config
+          configMap:
+            name: cow-config

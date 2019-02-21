@@ -5,9 +5,11 @@ SHORTNAME = trapped-cow
 # VERSION?=$(shell git tag -l --points-at HEAD)
 VERSION?=latest
 
-all: clean build
+BASEDIR = $(shell pwd)
 
-.PHONY: build buildimg buildimgtiny run runfg clean push kill
+all: clean test build
+
+.PHONY: build buildimg buildimgtiny run runfg clean push kill test deploy
 default: build
 
 build:
@@ -18,6 +20,10 @@ buildimg:
 
 buildimgtiny: 
 	docker build -f Dockerfile.slim -t $(NAME):$(VERSION) .
+
+test: 
+	go test ./...
+
 
 push: 
 	docker push $(NAME):$(VERSION)
@@ -34,3 +40,9 @@ kill:
 clean:
 	-docker rm -f $(NAME)
 	-docker rmi $(NAME):$(VERSION)
+	cd "$(BASEDIR)/deploy" && kubectl delete -f .
+	cd "$(BASEDIR)/deploy" && kubectl delete -f redis/ephemeral
+
+deploy:
+	cd "$(BASEDIR)/deploy" && kubectl apply -f .
+	cd "$(BASEDIR)/deploy" && kubectl apply -f redis/ephemeral
