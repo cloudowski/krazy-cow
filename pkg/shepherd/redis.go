@@ -38,7 +38,7 @@ func SendStats(id string, data string) {
 
 	if rcready {
 		if err := rc.RPush(id, data).Err(); err != nil {
-			log.Println("Error sending stats to shepherd: %v", err)
+			log.Println("Error sending stats to shepherd:", err)
 		}
 	}
 }
