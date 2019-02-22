@@ -54,3 +54,9 @@ http:
         cert: config/server.crt # <-- path to a cert file
         key: config/server.key # <-- path to a key file
 ```
+
+## Authentication
+
+Currently only `/setfree` is protected with http basic authentication. To set it up you need to point a credentials file with `http.auth.credentials` variable and enable it with `http.auth.enabled` set to `true`.
+
+Credentials must be put in a file in this very simple format: **`USERNAME:PASSWORD`**.

@@ -15,6 +15,9 @@ http:
         enabled: false
         cert: config/server.crt
         key: config/server.key
+    auth:
+        enabled: false
+        credentials: config/credentials.txt
 
 logging:
     requests: true

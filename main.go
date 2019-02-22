@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/subtle"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -56,7 +59,19 @@ func main() {
 
 	http.Handle("/metrics", promhttp.Handler())
 	http.HandleFunc("/", logging(c.Say))
-	http.HandleFunc("/setfree", logging(c.SetFree))
+
+	if cowconf.GetBool("http.auth.enabled") {
+		log.Println("Securing access to /setfree endpoint with basic http authentication")
+		user, pass, err := readCreds(cowconf.GetString("http.auth.credentials"))
+		// log.Println(user, pass)
+		if err != nil {
+			log.Fatal(err)
+		}
+		http.HandleFunc("/setfree", logging(basicAuth(c.SetFree, user, pass, "Secret Access")))
+	} else {
+		http.HandleFunc("/setfree", logging(c.SetFree))
+	}
+
 	http.HandleFunc("/healthz", logging(c.Healthcheck))
 
 	http_port := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
@@ -92,4 +107,36 @@ func logging(h http.HandlerFunc) http.HandlerFunc {
 		h(w, r)
 	}
 
+}
+
+func basicAuth(handler http.HandlerFunc, username, password, realm string) http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		user, pass, ok := r.BasicAuth()
+
+		if !ok || subtle.ConstantTimeCompare([]byte(user), []byte(username)) != 1 || subtle.ConstantTimeCompare([]byte(pass), []byte(password)) != 1 {
+			w.Header().Set("WWW-Authenticate", `Basic realm="`+realm+`"`)
+			w.WriteHeader(401)
+			w.Write([]byte("Unauthorized.\n"))
+			return
+		}
+
+		handler(w, r)
+	}
+}
+
+func readCreds(file string) (string, string, error) {
+
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		return "", "", fmt.Errorf("Failed to read credentials from %s: %v", file, err)
+	}
+	creds := regexp.MustCompile(":").Split(strings.TrimSpace(string(data)), 2)
+
+	if len(creds) == 2 {
+		return creds[0], creds[1], nil
+	} else {
+		return "", "", fmt.Errorf("Failed to read credentials from %s", file)
+	}
 }
