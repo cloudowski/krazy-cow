@@ -1,6 +1,6 @@
 SHELL := /bin/bash
-NAME = cloudowski/trapped-cow
-SHORTNAME = trapped-cow
+NAME = cloudowski/krazy-cow
+SHORTNAME = krazy-cow
 
 # VERSION?=$(shell git tag -l --points-at HEAD)
 VERSION?=latest

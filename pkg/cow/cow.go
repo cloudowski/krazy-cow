@@ -18,6 +18,10 @@ type Cow struct {
 	say      string
 }
 
+// var colors map[string]Color = {
+// 	green: Color.New(FgGreen).SprintFunc(),
+// }
+
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
 const happyThreshold = 10
 const asciicow string = `
@@ -41,7 +45,6 @@ func NewCow() Cow {
 	}
 
 	return c
-
 }
 
 func (c *Cow) SetMood(mood int) {

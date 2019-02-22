@@ -8,8 +8,8 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
-	"gitlab.com/cloudowski/trapped-cow/pkg/cow"
-	"gitlab.com/cloudowski/trapped-cow/pkg/shepherd"
+	"gitlab.com/cloudowski/krazy-cow/pkg/cow"
+	"gitlab.com/cloudowski/krazy-cow/pkg/shepherd"
 )
 
 var c cow.Cow
