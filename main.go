@@ -22,9 +22,9 @@ func init() {
 
 	cowconf = viper.New()
 
-	cowconf.SetEnvPrefix("TC")
+	cowconf.SetEnvPrefix("KC")
 	cowconf.SetConfigName("defaultconfig") // name of config file (without extension)
-	cowconf.AddConfigPath(".")
+	cowconf.AddConfigPath("config/")
 	err := cowconf.ReadInConfig() // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
 		log.Fatalf("Fatal error config file: %s \n", err)
@@ -58,7 +58,23 @@ func main() {
 	http.HandleFunc("/", logging(c.Say))
 	http.HandleFunc("/setfree", logging(c.SetFree))
 	http.HandleFunc("/healthz", logging(c.Healthcheck))
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+
+	http_port := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
+	https_port := fmt.Sprintf(":%s", cowconf.GetString("http.tls.port"))
+	// var err error
+	if cowconf.GetBool("http.tls.enabled") {
+		log.Printf("Starting https version on %s", https_port)
+		go func() {
+
+			if err := http.ListenAndServeTLS(https_port, cowconf.GetString("http.tls.cert"), cowconf.GetString("http.tls.key"), nil); err != nil {
+				log.Fatal(err)
+			}
+
+		}()
+	}
+	log.Printf("Starting plain http version on %s", http_port)
+
+	if err := http.ListenAndServe(http_port, nil); err != nil {
 		log.Fatal(err)
 	}
 }

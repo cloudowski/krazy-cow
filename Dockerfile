@@ -3,7 +3,7 @@ FROM golang:alpine AS build-env
 RUN apk add --no-cache git
 WORKDIR $GOPATH/src/gitlab.com/cloudowski/krazy-cow
 COPY . .
-COPY defaultconfig.yaml /app/
+COPY config /app/config/
 
 RUN go get -v -d
 RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /app/goapp

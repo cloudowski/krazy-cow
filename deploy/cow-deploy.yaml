@@ -43,9 +43,14 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+            - containerPort: 8443
+              name: https
+
           volumeMounts:
             - name: cow-config
               mountPath: /config/
+            - name: cow-tls
+              mountPath: /tls/
             - name: pasture
               mountPath: /pasture
 
@@ -62,4 +67,7 @@ spec:
         - name: cow-config
           configMap:
             name: cow-config
+        - name: cow-tls
+          secret:
+            secretName: cow-tls
         - name: pasture

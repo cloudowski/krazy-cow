@@ -10,6 +10,10 @@ spec:
       targetPort: http
       name: http
       nodePort: 32222
+    - port: 443
+      targetPort: https
+      name: https
+      nodePort: 32333
   selector:
     app: cow
   type: NodePort
