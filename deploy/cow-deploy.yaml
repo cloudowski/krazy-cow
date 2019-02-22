@@ -19,7 +19,7 @@ spec:
       # terminationGracePeriodSeconds: 5
 
       containers:
-        - image: cloudowski/trapped-cow:latest
+        - image: cloudowski/krazy-cow:latest
           imagePullPolicy: Always
           name: cow
 

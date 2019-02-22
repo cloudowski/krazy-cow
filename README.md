@@ -1,4 +1,19 @@
-# Trapped cow
+# Krazy Cow
+
+```
+           (    )
+            (oo)
+   )\.-----/(O O)
+  # ;       / u
+    (  .   |} )
+     |/ ".;|/;
+     "     " "
+```
+
+This is Krazy Cow that is Kubernetes friendly but sometimes moody and needs special attention. It helps you learn how containers and whole Cloud Native system can work together to bring more speed to your environments. 
+
+It also brings fun and joy!
+
 
 # Endpoints
 

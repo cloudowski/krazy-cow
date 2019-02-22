@@ -1,7 +1,7 @@
 # build stage
 FROM golang:alpine AS build-env
 RUN apk add --no-cache git
-WORKDIR $GOPATH/src/gitlab.com/cloudowski/trapped-cow
+WORKDIR $GOPATH/src/gitlab.com/cloudowski/krazy-cow
 COPY . .
 COPY defaultconfig.yaml /app/
 
