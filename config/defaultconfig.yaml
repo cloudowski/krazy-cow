@@ -8,5 +8,13 @@ cow:
     pasture:
         path: /pasture
         interval: 5
+http:
+    port: 8080
+    tls:
+        port: 8443
+        enabled: false
+        cert: config/server.crt
+        key: config/server.key
+
 logging:
     requests: true

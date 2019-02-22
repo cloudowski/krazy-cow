@@ -10,7 +10,7 @@
      "     " "
 ```
 
-This is Krazy Cow that is Kubernetes friendly but sometimes moody and needs special attention. It helps you learn how containers and whole Cloud Native system can work together to bring more speed to your environments. 
+This is **Krazy Cow** - a Kubernetes friendly animal that it also sometimes moody and requires special attention. It helps you learn how containers and whole Cloud Native system can work together to bring more speed to your environments. 
 
 It also brings fun and joy!
 
@@ -19,15 +19,16 @@ It also brings fun and joy!
 
 * `/` - talk with a cow
 * `/setfree` - set free a cow (cause a process to exit(1))
+* `/healthz` - healthcheck; also display current mood of the cow
 
 
 # Configuration
 
-## With a config file
+* **With a config file**
 
-Create `cowconfig.yaml`
+Create `cowconfig.yaml` and put it in the same directory as the app (binary file) or in the `/config/` directory. The latter location is used when running a container with a config file mounted from ConfigMap.
 
-## With environment variable
+* **With environment variable**
 
 Start a cow with environment variable set with the following scheme: 
 
@@ -39,4 +40,17 @@ cow:
 
 ```
 
-override with `TC_COW_SAY="Hello"`
+override with `KC_COW_SAY="Hello"`
+
+## TLS
+
+By default tls is **disabled**. To enable make sure your config the following entries:
+
+```
+http:
+    port: 8080 # <-- this is default port
+    tls:
+        enabled: true
+        cert: config/server.crt # <-- path to a cert file
+        key: config/server.key # <-- path to a key file
+```

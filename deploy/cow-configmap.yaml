@@ -8,7 +8,7 @@ data:
       say: "Moooooo, I'm a cow CONTAINER"
       initmood: 22
       moodchanger:
-        enabled: true
+        enabled: false
         interval: 2
         change: -1
       pasture:
@@ -16,3 +16,10 @@ data:
         interval: 3
     logging:
       requests: true
+    http:
+      port: 8080
+      tls:
+        port: 8443
+        enabled: true
+        cert: /tls/tls.crt
+        key: /tls/tls.key
