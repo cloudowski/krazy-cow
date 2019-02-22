@@ -23,3 +23,6 @@ data:
         enabled: true
         cert: /tls/tls.crt
         key: /tls/tls.key
+      auth:
+        enabled: true
+        credentials: /creds/credentials.txt

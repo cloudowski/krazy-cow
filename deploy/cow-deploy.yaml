@@ -51,6 +51,8 @@ spec:
               mountPath: /config/
             - name: cow-tls
               mountPath: /tls/
+            - name: cow-creds
+              mountPath: /creds/
             - name: pasture
               mountPath: /pasture
 
@@ -70,4 +72,7 @@ spec:
         - name: cow-tls
           secret:
             secretName: cow-tls
+        - name: cow-creds
+          secret:
+            secretName: cow-creds
         - name: pasture
