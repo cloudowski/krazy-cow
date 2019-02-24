@@ -4,11 +4,12 @@ import (
 	"crypto/subtle"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
+	"github.com/op/go-logging"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"gitlab.com/cloudowski/krazy-cow/pkg/cow"
@@ -18,10 +19,31 @@ import (
 var c cow.Cow
 var cowconf *viper.Viper
 
+var logger *logging.Logger
+
 func init() {
 	c = cow.NewCow()
 
-	log.Printf("cow %s (%s version %s) initialized", c.Name, APPNAME, VERSION)
+	// loggers for modules
+	logger = logging.MustGetLogger("main")
+	cowlogger := logging.MustGetLogger("cow")
+	logbackend := logging.NewLogBackend(os.Stderr, "", 0)
+	// logformat := logging.MustStringFormatter(`%{time:2006-01-02 15:04:05.9999} %{shortfunc} %{color} %{level} %{message} %{color:reset}`)
+	logformat := logging.MustStringFormatter(`%{time:2006-01-02 15:04:05.999} %{module:-7s} %{color} %{level} %{message} %{color:reset}`)
+
+	backendformatter := logging.NewBackendFormatter(logbackend, logformat)
+	logbackendleveled := logging.AddModuleLevel(backendformatter)
+	logger.SetBackend(logbackendleveled)
+
+	cowlogger.SetBackend(logbackendleveled)
+	cow.SetLogger(cowlogger)
+
+	// logger.Debugf("debug %s", "sssssssecret")
+	// logger.Info("info")
+	// logger.Notice("notice")
+	// logger.Warning("warning")
+	// logger.Error("err")
+	// logger.Critical("crit")
 
 	cowconf = viper.New()
 
@@ -30,7 +52,7 @@ func init() {
 	cowconf.AddConfigPath("config/")
 	err := cowconf.ReadInConfig() // Find and read the config file
 	if err != nil {               // Handle errors reading the config file
-		log.Fatalf("Fatal error config file: %s \n", err)
+		logger.Fatalf("Fatal error config file: %s \n", err)
 	}
 
 	cowconf.SetConfigName("cowconfig") // name of config file (without extension)
@@ -44,7 +66,12 @@ func init() {
 	cowconf.AutomaticEnv()
 	cowconf.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // replace "." with "_" for nested keys
 
-	log.Printf("Config: %v", cowconf.AllSettings())
+	loglevel, _ := logging.LogLevel(cowconf.GetString("logging.level"))
+	logging.SetLevel(loglevel, "main")
+
+	logger.Infof("🐮 cow %s (%s version %s) initialized", c.Name, APPNAME, VERSION)
+
+	logger.Debugf("Config: %v", cowconf.AllSettings())
 
 	c.SetMood(cowconf.GetInt("cow.initmood"))
 	c.SetSay(cowconf.GetString("cow.say"))
@@ -58,50 +85,49 @@ func init() {
 func main() {
 
 	http.Handle("/metrics", promhttp.Handler())
-	http.HandleFunc("/", logging(c.Say))
+	http.HandleFunc("/", logwrap(c.Say))
 
 	if cowconf.GetBool("http.auth.enabled") {
-		log.Println("Securing access to /setfree endpoint with basic http authentication")
+		logger.Info("Securing access to /setfree endpoint with basic http authentication")
 		user, pass, err := readCreds(cowconf.GetString("http.auth.credentials"))
 		// log.Println(user, pass)
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err)
 		}
-		http.HandleFunc("/setfree", logging(basicAuth(c.SetFree, user, pass, "Secret Access")))
+		http.HandleFunc("/setfree", logwrap(basicAuth(c.SetFree, user, pass, "Secret Access")))
 	} else {
-		http.HandleFunc("/setfree", logging(c.SetFree))
+		http.HandleFunc("/setfree", logwrap(c.SetFree))
 	}
 
-	http.HandleFunc("/healthz", logging(c.Healthcheck))
+	http.HandleFunc("/healthz", logwrap(c.Healthcheck))
 
 	http_port := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
 	https_port := fmt.Sprintf(":%s", cowconf.GetString("http.tls.port"))
-	// var err error
 	if cowconf.GetBool("http.tls.enabled") {
-		log.Printf("Starting https version on %s", https_port)
+		logger.Infof("Starting https version on %s", https_port)
 		go func() {
 
 			if err := http.ListenAndServeTLS(https_port, cowconf.GetString("http.tls.cert"), cowconf.GetString("http.tls.key"), nil); err != nil {
-				log.Fatal(err)
+				logger.Fatal(err)
 			}
 
 		}()
 	}
-	log.Printf("Starting plain http version on %s", http_port)
+	logger.Infof("Starting plain http version on %s", http_port)
 
 	if err := http.ListenAndServe(http_port, nil); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 }
 
-func logging(h http.HandlerFunc) http.HandlerFunc {
+func logwrap(h http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.Requests++
 		ua := r.UserAgent()
 
 		if cowconf.GetBool("logging.requests") {
-			log.Printf("%v uri: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, ua)
+			logger.Infof("%v uri: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, ua)
 		}
 		shepherd.SendStats(c.Name, fmt.Sprintf("%v %v %v", r.RequestURI, r.RemoteAddr, ua))
 		h(w, r)
