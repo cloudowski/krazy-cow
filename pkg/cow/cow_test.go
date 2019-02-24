@@ -6,8 +6,6 @@ import (
 	"net/http/httptest"
 	"regexp"
 	"testing"
-
-	"gitlab.com/cloudowski/krazy-cow/pkg/cow"
 )
 
 func TestHealthcheck(t *testing.T) {
@@ -47,7 +45,7 @@ func TestSay(t *testing.T) {
 	cowname := "testcow"
 
 	req, err := http.NewRequest("GET", "/", nil)
-	req.Header.Set(cow.HeaderHttpTextClientKey, "true")
+	req.Header.Set(HeaderHttpTextClientKey, "true")
 	if err != nil {
 		t.Fatal(err)
 	}
