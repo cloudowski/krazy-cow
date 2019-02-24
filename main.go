@@ -70,7 +70,7 @@ func init() {
 	loglevel, _ := logging.LogLevel(cowconf.GetString("logging.level"))
 	logging.SetLevel(loglevel, "main")
 
-	logger.Infof("🐮 cow %s (%s version %s) initialized", c.Name, APPNAME, VERSION)
+	logger.Infof("🐮 cow %s (%s version %s) initialized", c.Name, APPNAME, version+gitCommit)
 
 	logger.Debugf("Config: %v", cowconf.AllSettings())
 

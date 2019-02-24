@@ -1,9 +1,12 @@
-SHELL := /bin/bash
+SHELL = /bin/bash
 NAME = cloudowski/krazy-cow
 SHORTNAME = krazy-cow
 
-# VERSION?=$(shell git tag -l --points-at HEAD)
-VERSION?=latest
+VERSION = $(shell git tag -l --points-at HEAD)
+GITCOMMIT = $(shell git rev-list -1 HEAD --abbrev-commit)
+ifeq ($(TEST),)
+	VERSION=latest
+endif
 
 BASEDIR = $(shell pwd)
 
@@ -16,10 +19,10 @@ build:
 	go build -o cow *.go
 
 buildimg: 
-	docker build -t $(NAME):$(VERSION) -f Dockerfile .
+	docker build --build-arg VERSION=$(VERSION) --build-arg GITCOMMIT=$(GITCOMMIT) -t $(NAME):$(VERSION) -f Dockerfile .
 
 buildimgtiny: 
-	docker build -f Dockerfile.slim -t $(NAME):$(VERSION) .
+	docker build  --build-arg VERSION=$(VERSION) --build-arg GITCOMMIT=$(GITCOMMIT) -t $(NAME):$(VERSION) -f Dockerfile.slim .
 
 test: 
 	go test ./...
