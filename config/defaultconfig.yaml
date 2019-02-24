@@ -21,3 +21,4 @@ http:
 
 logging:
     requests: true
+    level: DEBUG # see https://godoc.org/github.com/op/go-logging#Level

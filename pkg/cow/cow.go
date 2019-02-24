@@ -3,12 +3,13 @@ package cow
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 	"time"
+
+	"github.com/op/go-logging"
 )
 
 type Cow struct {
@@ -17,10 +18,6 @@ type Cow struct {
 	mood     int
 	say      string
 }
-
-// var colors map[string]Color = {
-// 	green: Color.New(FgGreen).SprintFunc(),
-// }
 
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
 const happyThreshold = 10
@@ -34,17 +31,23 @@ const asciicow string = `
      "     " "
 `
 
+var logger *logging.Logger
+
 func NewCow() Cow {
 
 	c := Cow{}
 
 	if name, err := os.Hostname(); err != nil {
-		log.Fatalln("Failed to get cow name (read hostname)")
+		logger.Fatal("Failed to get cow name (read hostname)")
 	} else {
 		c.Name = name
 	}
 
 	return c
+}
+
+func SetLogger(l *logging.Logger) {
+	logger = l
 }
 
 func (c *Cow) SetMood(mood int) {
@@ -75,7 +78,7 @@ func (c *Cow) SetFree(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Moooooooo! (cow %s has been set free)", c.Name)
 	go func() {
 		time.Sleep(time.Second * 3)
-		log.Fatalln("Cow has been set free!")
+		logger.Fatal("Cow has been set free!")
 	}()
 
 }
@@ -92,26 +95,26 @@ func (c *Cow) Healthcheck(w http.ResponseWriter, r *http.Request) {
 
 // function that should run as goroutine to change cow mood
 func (c *Cow) MoodChanger(intervalSeconds int, moodChange int) {
-	log.Printf("Initializing MoodChanger - interval: %vs, change: %v\n", intervalSeconds, moodChange)
+	logger.Debugf("Initializing MoodChanger - interval: %vs, change: %v\n", intervalSeconds, moodChange)
 	for {
 		time.Sleep(time.Duration(intervalSeconds) * time.Second)
 		if c.GetMood() > 0 {
 			c.SetMood(c.GetMood() + moodChange)
 		}
-		log.Println("MoodChanger - current mood:", c.GetMood())
+		logger.Debugf("MoodChanger - current mood:", c.GetMood())
 	}
 }
 
 // eat tuft from pasture id available
 func (c *Cow) Grass(path string, interval int) {
 	if f, err := os.Stat(path); err != nil {
-		log.Println("Failed to check pasture:", err)
+		logger.Warning("Failed to check pasture:", err)
 		return
 
 	} else if f.IsDir() {
-		log.Printf("Going to eat from %v, interval: %vs\n", path, interval)
+		logger.Debugf("Going to eat from %v, interval: %vs\n", path, interval)
 	} else {
-		log.Println(err)
+		logger.Error(err)
 		return
 	}
 
@@ -128,7 +131,7 @@ func (c *Cow) Grass(path string, interval int) {
 		files, err := ioutil.ReadDir(path)
 
 		if err != nil {
-			log.Println("Could not find tuft:", err)
+			logger.Warning("Could not find tuft:", err)
 			continue
 		}
 
@@ -141,25 +144,25 @@ func (c *Cow) Grass(path string, interval int) {
 
 				continue
 			} else if tuftGreen.MatchString(tuft) {
-				log.Println("Eating tuft:", tuft)
+				logger.Debug("Eating tuft:", tuft)
 				if err := os.Rename(filepath.Join(path, tuft), filepath.Join(path, fmt.Sprintf(".%v.eaten_by_%v", tuft, c.Name))); err != nil {
-					log.Fatalln("Could not eat tuft:", err)
+					logger.Fatal("Could not eat tuft:", err)
 				}
 				ate = true
 				break
 
 			} else {
-				log.Println("NOT a tuft:", tuft)
+				logger.Debug("NOT a tuft:", tuft)
 			}
 
 		}
 
 		if ate {
 			c.SetMood(c.GetMood() + 2)
-			log.Println("Happiness increased - mood:", c.GetMood())
+			logger.Debug("Happiness increased - mood:", c.GetMood())
 		} else if c.GetMood() > 0 {
 			c.SetMood(c.GetMood() - 1)
-			log.Println("No food - getting sad and angry - mood decreased:", c.GetMood())
+			logger.Warning("No food - getting sad and angry - mood decreased:", c.GetMood())
 		}
 	}
 }
