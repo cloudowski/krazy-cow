@@ -88,7 +88,7 @@ func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 		Name:     c.Name,
 		Version:  "0.1.0-alpha"}
 	if !isTextRequest(r) {
-		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
+		tmpl := template.Must(template.ParseFiles("../../web/templates/index.html"))
 		if err := tmpl.Execute(w, data); err != nil {
 			logger.Errorf("Error formatting html template: %v", err)
 		}
