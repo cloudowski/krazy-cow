@@ -88,8 +88,7 @@ func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 			logger.Errorf("Error formatting html template: %v", err)
 		}
 	} else {
-		fmt.Fprintf(w, "%15s %s %s", " ", msg, asciicow)
-
+		fmt.Fprintf(w, "%s\n %s\nver: %s\n", data.Say, data.Asciicow, data.Version)
 	}
 
 }

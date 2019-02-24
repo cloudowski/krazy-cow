@@ -1,19 +1,56 @@
 <html>
+<head>
+<style>
+body {
+    background-color: black;
+    font-size: 16px; 
+    color: #ffffff;
+}
 
-<body bgcolor="#000000" style="font-size: 16px; color: #ffffff">
-    <table style="font-size: 24px">
+table {
+    text-align: left;
+}
+
+td#cow   {
+    color: grey;
+    font-size: 24px;
+    text-align: left;
+    vertical-align: text-top;
+    }
+
+td#say   {
+    font-size: 20px;
+    text-align: right;
+    vertical-align: text-top;
+    }
+
+td#grass   {
+    color: green;
+    font-size: 24px;
+    text-align: left;
+    vertical-align: text-top;
+   }
+
+</style>
+
+<body>
+    <table>
         <tr>
-            <td>
-                <pre>
-                {{.Asciicow}}
-                </pre>
+            <td id="cow">
+                <pre>{{.Asciicow}}</pre>
             </td>
-            <td>
-                        {{.Say}}
+            <td id="say">
+                {{.Say}}
             </td>
         </tr>
+        <td id="grass">
+                <pre>################## </pre>
+            </td>
+            <td>
+            </td>
     </table>
-
+</br>
+</br>
     version {{.Version}}
 </body>
 
