@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/mssola/user_agent"
 	"github.com/op/go-logging"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
@@ -124,14 +125,23 @@ func logwrap(h http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.Requests++
-		ua := r.UserAgent()
+		// ua := r.UserAgent()
+		ua := user_agent.New(r.UserAgent())
+		browser, _ := ua.Browser()
 
 		if cowconf.GetBool("logging.requests") {
-			logger.Infof("%v uri: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, ua)
+			logger.Infof("%v uri: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, r.UserAgent())
 		}
-		shepherd.SendStats(c.Name, fmt.Sprintf("%v %v %v", r.RequestURI, r.RemoteAddr, ua))
+		shepherd.SendStats(c.Name, fmt.Sprintf("%v %v %v", r.RequestURI, r.RemoteAddr, browser))
+		r.Header.Set(cow.HeaderHttpTextClientKey, fmt.Sprintf("%v", isHttpTextClient(browser)))
 		h(w, r)
 	}
+
+}
+
+func isHttpTextClient(useragent string) bool {
+	r := regexp.MustCompile("(?i)(curl)|(wget)")
+	return r.MatchString(useragent)
 
 }
 
