@@ -39,6 +39,7 @@ type indexPage struct {
 	Say      string
 	Asciicow string
 	Version  string
+	Name     string
 }
 
 func NewCow() Cow {
@@ -81,14 +82,18 @@ func isTextRequest(r *http.Request) bool {
 func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 
 	msg := fmt.Sprintf("\"%s\"", c.GetSay())
-	data := indexPage{Say: msg, Asciicow: asciicow, Version: "0.1.0-alpha"}
+	data := indexPage{
+		Say:      msg,
+		Asciicow: asciicow,
+		Name:     c.Name,
+		Version:  "0.1.0-alpha"}
 	if !isTextRequest(r) {
 		tmpl := template.Must(template.ParseFiles("web/templates/index.html"))
 		if err := tmpl.Execute(w, data); err != nil {
 			logger.Errorf("Error formatting html template: %v", err)
 		}
 	} else {
-		fmt.Fprintf(w, "%s\n %s\nver: %s\n", data.Say, data.Asciicow, data.Version)
+		fmt.Fprintf(w, "%s: %s\n %s\nver: %s\n", data.Name, data.Say, data.Asciicow, data.Version)
 	}
 
 }
