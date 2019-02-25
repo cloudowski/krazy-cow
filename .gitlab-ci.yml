@@ -1,4 +1,5 @@
-image: docker:git
+# image: docker:git
+image: cloudowski/gitlab-runner:0.1
 
 services:
   - docker:dind
@@ -13,7 +14,8 @@ stages:
 
 test:
   stage: test
-  image: golang:1.11
+  # image: golang:1.11
+  image: cloudowski/gitlab-runner:0.1
   script:
     - mkdir -p /go/src/gitlab.com/$CI_PROJECT_NAMESPACE
     - cp -r /builds/$CI_PROJECT_NAMESPACE /go/src/gitlab.com/
