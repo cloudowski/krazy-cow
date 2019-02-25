@@ -1,4 +1,5 @@
-image: docker:git
+# image: docker:git
+image: cloudowski/gitlab-runner:0.1
 
 services:
   - docker:dind
@@ -14,18 +15,21 @@ stages:
 test:
   stage: test
   image: golang:1.11
+  # image: cloudowski/gitlab-runner:0.1
   script:
     - mkdir -p /go/src/gitlab.com/$CI_PROJECT_NAMESPACE
     - cp -r /builds/$CI_PROJECT_NAMESPACE /go/src/gitlab.com/
     - cd /go/src/gitlab.com/$CI_PROJECT_NAMESPACE/krazy-cow
     - go get -d
-    - go test ./... -v
+    # - go test ./... -v
+    - make test
 
 build-and-publish:
   stage: build and publish
   before_script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASS
   script:
-    # - make buildimg
-    - docker build -t cloudowski/krazy-cow .
-    - docker push cloudowski/krazy-cow
+    - make buildimg
+    - make push
+    # - docker build -t cloudowski/krazy-cow .
+    # - docker push cloudowski/krazy-cow

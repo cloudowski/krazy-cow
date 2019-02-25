@@ -4,6 +4,7 @@ RUN apk add --no-cache git
 WORKDIR $GOPATH/src/gitlab.com/cloudowski/krazy-cow
 COPY . .
 COPY config /app/config/
+COPY web /app/web/
 
 RUN go get -v -d
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o /app/goapp

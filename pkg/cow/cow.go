@@ -2,6 +2,7 @@ package cow
 
 import (
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -17,10 +18,12 @@ type Cow struct {
 	Name     string
 	mood     int
 	say      string
+	version  string
 }
 
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
 const happyThreshold = 10
+const HeaderHttpTextClientKey = "X-IsHttpTextClient"
 const asciicow string = `
            (    )
             (oo)
@@ -32,6 +35,13 @@ const asciicow string = `
 `
 
 var logger *logging.Logger
+
+type indexPage struct {
+	Say      string
+	Asciicow string
+	Version  string
+	Name     string
+}
 
 func NewCow() Cow {
 
@@ -58,6 +68,10 @@ func (c *Cow) GetMood() int {
 	return c.mood
 }
 
+func (c *Cow) SetVersion(version string) {
+	c.version = version
+}
+
 func (c *Cow) SetSay(say string) {
 	c.say = say
 }
@@ -66,10 +80,28 @@ func (c *Cow) GetSay() string {
 	return c.say
 }
 
+func isTextRequest(r *http.Request) bool {
+	return r.Header.Get(HeaderHttpTextClientKey) == "true"
+}
+
 func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 
 	msg := fmt.Sprintf("\"%s\"", c.GetSay())
-	fmt.Fprintf(w, "%15s %s %s", " ", msg, asciicow)
+	data := indexPage{
+		Say:      msg,
+		Asciicow: asciicow,
+		Name:     c.Name,
+		Version:  c.version,
+	}
+	if !isTextRequest(r) {
+		tmplFile, _ := filepath.Abs("web/templates/index.html")
+		tmpl := template.Must(template.ParseFiles(tmplFile))
+		if err := tmpl.Execute(w, data); err != nil {
+			logger.Errorf("Error formatting html template: %v", err)
+		}
+	} else {
+		fmt.Fprintf(w, "%s: %s\n %s\nver: %s\n", data.Name, data.Say, data.Asciicow, data.Version)
+	}
 
 }
 

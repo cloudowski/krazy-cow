@@ -1,3 +1,5 @@
 package main
 
-const VERSION string = "0.0.1"
+var version = "undefined"
+
+var gitCommit string
