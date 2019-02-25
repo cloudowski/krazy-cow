@@ -45,6 +45,7 @@ func TestSay(t *testing.T) {
 	cowname := "testcow"
 
 	req, err := http.NewRequest("GET", "/", nil)
+	req.Header.Set(HeaderHttpTextClientKey, "true")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +67,6 @@ func TestSay(t *testing.T) {
 	r, _ := regexp.Compile(cowregex)
 
 	if !r.MatchString(rr.Body.String()) {
-		// t.Errorf("Could not find text matching regexp %v", cowregex)
 		t.Errorf("Got %v, did not match regexp %v", rr.Body.String(), cowregex)
 	}
 
