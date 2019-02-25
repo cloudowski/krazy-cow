@@ -10,7 +10,7 @@
      "     " "
 ```
 
-This is **Krazy Cow** - a Kubernetes friendly animal that it also sometimes moody and requires special attention. It helps you learn how containers and whole Cloud Native system can work together to bring more speed to your environments. 
+This is **Krazy Cow** - a Kubernetes friendly animal that it also moody and requires special attention. It helps you learn how containers and whole Cloud Native system can work together to bring more speed to your environments. 
 
 It also fun to play with!
 
