@@ -4,7 +4,7 @@ SHORTNAME = krazy-cow
 
 VERSION = $(shell git tag -l --points-at HEAD)
 GITCOMMIT = $(shell git rev-list -1 HEAD --abbrev-commit)
-ifeq ($(TEST),)
+ifeq ($(VERSION),)
 	VERSION=latest
 endif
 
