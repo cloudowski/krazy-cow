@@ -39,6 +39,12 @@ func init() {
 	cowlogger.SetBackend(logbackendleveled)
 	cow.SetLogger(cowlogger)
 
+	cowversion := version
+	if gitCommit != "" {
+		cowversion += "-" + gitCommit
+	}
+	c.SetVersion(cowversion)
+
 	// logger.Debugf("debug %s", "sssssssecret")
 	// logger.Info("info")
 	// logger.Notice("notice")

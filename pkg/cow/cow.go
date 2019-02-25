@@ -18,6 +18,7 @@ type Cow struct {
 	Name     string
 	mood     int
 	say      string
+	version  string
 }
 
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
@@ -67,6 +68,10 @@ func (c *Cow) GetMood() int {
 	return c.mood
 }
 
+func (c *Cow) SetVersion(version string) {
+	c.version = version
+}
+
 func (c *Cow) SetSay(say string) {
 	c.say = say
 }
@@ -86,7 +91,8 @@ func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 		Say:      msg,
 		Asciicow: asciicow,
 		Name:     c.Name,
-		Version:  "0.1.0-alpha"}
+		Version:  c.version,
+	}
 	if !isTextRequest(r) {
 		tmplFile, _ := filepath.Abs("web/templates/index.html")
 		tmpl := template.Must(template.ParseFiles(tmplFile))

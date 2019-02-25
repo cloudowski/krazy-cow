@@ -16,7 +16,7 @@ all: clean test build
 default: build
 
 build:
-	go build -o cow *.go
+	go build -ldflags="-w -s -X main.version=$(VERSION) -X main.gitCommit=$(GITCOMMIT)" -o cow *.go
 
 buildimg: 
 	docker build --build-arg VERSION=$(VERSION) --build-arg GITCOMMIT=$(GITCOMMIT) -t $(NAME):$(VERSION) -f Dockerfile .
