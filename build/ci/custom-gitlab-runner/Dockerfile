@@ -1,3 +1,3 @@
-FROM golang:1.11-alpine
+FROM docker:stable-git
 
-RUN apk add --no-cache docker git make gcc
+RUN apk add --no-cache make
