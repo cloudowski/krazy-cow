@@ -45,13 +45,6 @@ func init() {
 	}
 	c.SetVersion(cowversion)
 
-	// logger.Debugf("debug %s", "sssssssecret")
-	// logger.Info("info")
-	// logger.Notice("notice")
-	// logger.Warning("warning")
-	// logger.Error("err")
-	// logger.Critical("crit")
-
 	cowconf = viper.New()
 
 	cowconf.SetEnvPrefix("KC")
@@ -68,20 +61,22 @@ func init() {
 	cowconf.MergeInConfig()
 
 	cowconf.SetDefault("cow.say", "Mooo")
-	cowconf.SetDefault("logging.requests", false)
 
 	cowconf.AutomaticEnv()
 	cowconf.SetEnvKeyReplacer(strings.NewReplacer(".", "_")) // replace "." with "_" for nested keys
 
 	loglevel, _ := logging.LogLevel(cowconf.GetString("logging.level"))
 	logging.SetLevel(loglevel, "main")
+	logging.SetLevel(loglevel, "cow")
 
-	logger.Infof("🐮 cow %s (%s version %s) initialized", c.Name, APPNAME, version+"-"+gitCommit)
+	logger.Noticef("🐮 cow %s (%s version %s) initialized", c.Name, APPNAME, version+"-"+gitCommit)
 
 	logger.Debugf("Config: %v", cowconf.AllSettings())
 
 	c.SetMood(cowconf.GetInt("cow.initmood"))
 	c.SetSay(cowconf.GetString("cow.say"))
+
+	shepherd.RedisUrl = cowconf.GetString("cow.shepherd.redisurl")
 
 	if cowconf.GetBool("cow.moodchanger.enabled") {
 		go c.MoodChanger(cowconf.GetInt("cow.moodchanger.interval"), cowconf.GetInt("cow.moodchanger.change"))
@@ -95,7 +90,7 @@ func main() {
 	http.HandleFunc("/", logwrap(c.Say))
 
 	if cowconf.GetBool("http.auth.enabled") {
-		logger.Info("Securing access to /setfree endpoint with basic http authentication")
+		logger.Notice("Securing access to /setfree endpoint with basic http authentication")
 		user, pass, err := readCreds(cowconf.GetString("http.auth.credentials"))
 		// log.Println(user, pass)
 		if err != nil {
@@ -111,7 +106,7 @@ func main() {
 	http_port := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
 	https_port := fmt.Sprintf(":%s", cowconf.GetString("http.tls.port"))
 	if cowconf.GetBool("http.tls.enabled") {
-		logger.Infof("Starting https version on %s", https_port)
+		logger.Noticef("Starting https version on %s", https_port)
 		go func() {
 
 			if err := http.ListenAndServeTLS(https_port, cowconf.GetString("http.tls.cert"), cowconf.GetString("http.tls.key"), nil); err != nil {
@@ -121,7 +116,7 @@ func main() {
 		}()
 	}
 
-	logger.Infof("Starting plain http version on %s", http_port)
+	logger.Noticef("Starting plain http version on %s", http_port)
 
 	if err := http.ListenAndServe(http_port, nil); err != nil {
 		logger.Fatal(err)

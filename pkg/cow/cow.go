@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/op/go-logging"
+	"gitlab.com/cloudowski/krazy-cow/pkg/shepherd"
 )
 
 type Cow struct {
@@ -23,15 +24,18 @@ type Cow struct {
 
 // happy threshold defines mimimum value of Mood parameter that determines if a cow is happy or not
 const happyThreshold = 10
+
+// how many tufts cow has to eat to produce a single unit of milk
+const milkThreshold = 5
 const HeaderHttpTextClientKey = "X-IsHttpTextClient"
 const asciicow string = `
            (    )
             (oo)
    )\.-----/(O O)
-  # ;       / u
+  # ;       / u    
     (  .   |} )
      |/ ".;|/;
-     "     " "
+	 "     " "
 `
 
 var logger *logging.Logger
@@ -53,7 +57,8 @@ func NewCow() Cow {
 		c.Name = name
 	}
 
-	go GetCows()
+	// not yet
+	// go GetCows()
 
 	return c
 }
@@ -139,7 +144,7 @@ func (c *Cow) MoodChanger(intervalSeconds int, moodChange int) {
 	}
 }
 
-// eat tuft from pasture id available
+// Eat tuft from pasture id available
 func (c *Cow) Grass(path string, interval int) {
 	if f, err := os.Stat(path); err != nil {
 		logger.Warning("Failed to check pasture:", err)
@@ -156,6 +161,7 @@ func (c *Cow) Grass(path string, interval int) {
 	tuftEaten := regexp.MustCompile("\\.eaten_by")
 
 	var ate bool
+	var tuftCounter int
 
 	for {
 		time.Sleep(time.Duration(interval) * time.Second)
@@ -169,13 +175,13 @@ func (c *Cow) Grass(path string, interval int) {
 			continue
 		}
 
+		// eat a tuft
 		for _, f := range files {
 			if f.IsDir() {
 				continue
 			}
 			tuft := f.Name()
 			if tuftEaten.MatchString(tuft) {
-
 				continue
 			} else if tuftGreen.MatchString(tuft) {
 				logger.Debug("Eating tuft:", tuft)
@@ -192,10 +198,23 @@ func (c *Cow) Grass(path string, interval int) {
 		}
 
 		if ate {
-			c.SetMood(c.GetMood() + 2)
+			c.SetMood(c.GetMood() + 1)
 			logger.Debug("Happiness increased - mood:", c.GetMood())
+
+			tuftCounter++
+			logger.Debugf("Milk counter: %v", tuftCounter)
+			if tuftCounter%milkThreshold == 0 {
+				if err := shepherd.SendMilk(c.Name); err != nil {
+					logger.Warningf("Milk lost - could not send to shepherd: %v", err)
+				} else {
+					logger.Infof("Milk produced and sent to shepherd")
+				}
+			} else {
+				logger.Debugf("Milk status: [%v/%v]", tuftCounter%milkThreshold, milkThreshold)
+			}
+
 		} else if c.GetMood() > 0 {
-			c.SetMood(c.GetMood() - 1)
+			c.SetMood(c.GetMood() - 2)
 			logger.Warning("No food - getting sad and angry - mood decreased:", c.GetMood())
 		}
 	}

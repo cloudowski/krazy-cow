@@ -60,3 +60,11 @@ http:
 Currently only `/setfree` is protected with http basic authentication. To set it up you need to point a credentials file with `http.auth.credentials` variable and enable it with `http.auth.enabled` set to `true`.
 
 Credentials must be put in a file in this very simple format: **`USERNAME:PASSWORD`**.
+
+## Access Kubernetes API
+
+To enable access to Kubernetes api and enable features of herd discovery a rolebinding is required. To create it simply add it with a command:
+
+```
+kubectl create clusterrolebinding cowview --clusterrole=view --serviceaccount=default:default
+```

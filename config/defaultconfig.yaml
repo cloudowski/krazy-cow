@@ -5,6 +5,8 @@ cow:
         enabled: false
         interval: 5
         change: -1
+    shepherd:
+        redisurl: redis:6379
     pasture:
         path: /pasture
         interval: 5
@@ -22,3 +24,5 @@ http:
 logging:
     requests: true
     level: DEBUG # see https://godoc.org/github.com/op/go-logging#Level
+    # level: NOTICE # see https://godoc.org/github.com/op/go-logging#Level
+    # level: INFO # see https://godoc.org/github.com/op/go-logging#Level
