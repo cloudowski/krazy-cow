@@ -53,6 +53,8 @@ func NewCow() Cow {
 		c.Name = name
 	}
 
+	go GetCows()
+
 	return c
 }
 

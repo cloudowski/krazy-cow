@@ -3,6 +3,7 @@ kind: Service
 metadata:
   labels:
     app: cow
+    herd: blue
   name: cow
 spec:
   ports:
@@ -16,4 +17,5 @@ spec:
       nodePort: 32333
   selector:
     app: cow
+    herd: blue
   type: NodePort
