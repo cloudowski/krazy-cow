@@ -14,15 +14,31 @@ This is **Krazy Cow** - a Kubernetes friendly animal that it also moody and requ
 
 It also fun to play with!
 
+# Features
+
+* Configuration provided by yaml file (with all defaults placed in [config/defaultconfig.yaml](config/defaultconfig.yaml)) and environment variables
+* Plain http and additional, optional https endpoint - key and certificate files required
+* Logging with colored output and different, configurable severity levels (see [https://github.com/op/go-logging](https://github.com/op/go-logging))
+* Healthcheck endpoint that returns error when cow mood is below a defined threshold
+* Artificial "mood changer" can be attached to a cow to decrease the mood every N seconds
+* Logging all requests (*access logs*)
+* Different output for text (curl,wget)  and browser clients
+* "Shepherd" (redis) can be a destination for access logs 
+* When "pasture" location is provided to a cow with tufts (files `tuft*`) then it is being periodically eaten by a cow increasing its mood AND producing a milk; if a shepherd is available then it is sent to a `dairy` (a key with that name in redis); when there are no tufts left in pasture a cow mood is decreased
+* Cow can be set free using `/setfree` endpoint. Optionally it can be secured with basic http authentication.
+
 
 # Endpoints
 
 * `/` - talk with a cow
+* `/metrics` - standard Prometheus endpoint
 * `/setfree` - set free a cow (cause a process to exit(1))
 * `/healthz` - healthcheck; also display current mood of the cow
 
 
 # Configuration
+
+Configuration is handled by viper ([https://github.com/spf13/viper](https://github.com/spf13/viper)) and thus yaml files and environment variables can be used.
 
 * **With a config file**
 
