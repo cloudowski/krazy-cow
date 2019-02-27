@@ -7,14 +7,16 @@ metadata:
     app: cow
 
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: cow
+      herd: blue
   template:
     metadata:
       labels:
         app: cow
+        herd: blue
     spec:
       # terminationGracePeriodSeconds: 5
 

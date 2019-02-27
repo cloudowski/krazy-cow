@@ -120,6 +120,7 @@ func main() {
 
 		}()
 	}
+
 	logger.Infof("Starting plain http version on %s", http_port)
 
 	if err := http.ListenAndServe(http_port, nil); err != nil {

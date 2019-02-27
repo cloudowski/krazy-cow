@@ -1,5 +1,5 @@
 SHELL = /bin/bash
-NAME = cloudowski/krazy-cow
+NAME ?= cloudowski/krazy-cow
 SHORTNAME = krazy-cow
 
 VERSION = $(shell git tag -l --points-at HEAD)
@@ -25,7 +25,7 @@ buildimgtiny:
 	docker build  --build-arg VERSION=$(VERSION) --build-arg GITCOMMIT=$(GITCOMMIT) -t $(NAME):$(VERSION) -f Dockerfile.slim .
 
 test: 
-	go test ./...
+	go test -cover ./...
 
 
 push: 
