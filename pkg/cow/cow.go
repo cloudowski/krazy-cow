@@ -32,10 +32,10 @@ const asciicow string = `
            (    )
             (oo)
    )\.-----/(O O)
-  # ;       / u    
+  # ;       / u
     (  .   |} )
      |/ ".;|/;
-	 "     " "
+     "     " "
 `
 
 var logger *logging.Logger
