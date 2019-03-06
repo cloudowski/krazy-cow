@@ -140,7 +140,7 @@ func (c *Cow) MoodChanger(intervalSeconds int, moodChange int) {
 		if c.GetMood() > 0 {
 			c.SetMood(c.GetMood() + moodChange)
 		}
-		logger.Debugf("MoodChanger - current mood:", c.GetMood())
+		logger.Debugf("MoodChanger - current mood: %v", c.GetMood())
 	}
 }
 
