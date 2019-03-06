@@ -127,6 +127,7 @@ func (c *Cow) Healthcheck(w http.ResponseWriter, r *http.Request) {
 	if c.GetMood() >= happyThreshold {
 		fmt.Fprintln(w, "MooOK")
 	} else {
+		logger.Debugf("Healthcheck failed - Cow is not in good mood: current mood (%v) < happiness threshold (%v)", c.GetMood(), happyThreshold)
 		http.Error(w, fmt.Sprintf("I am not ok, mood level: %v", c.GetMood()), http.StatusBadRequest)
 	}
 
