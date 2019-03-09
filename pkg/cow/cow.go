@@ -93,6 +93,12 @@ func isTextRequest(r *http.Request) bool {
 
 func (c *Cow) Say(w http.ResponseWriter, r *http.Request) {
 
+	// disable cache with headers
+
+	w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
+
 	msg := fmt.Sprintf("\"%s\"", c.GetSay())
 	data := indexPage{
 		Say:      msg,
