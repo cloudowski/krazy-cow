@@ -1,0 +1,37 @@
+kind: pipeline
+name: default
+
+workspace:
+  base: /go
+  path: src/github.com/cloudowski/krazy-cow
+
+steps:
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
+
+  - name: build
+    image: golang
+    commands:
+      # - go get -d
+      - make build
+      - echo -n "latest"  > .tags
+      - echo -n ",$(make getversion)"  >> .tags
+      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
+
+  - name: publish
+    image: banzaicloud/drone-kaniko:0.3.4
+    settings:
+      registry:
+        from_secret: registry
+      repo:
+        from_secret: repo
+      # tags: ${DRONE_COMMIT_SHA}
+      skip_tls_verify: true
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass

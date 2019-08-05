@@ -1,3 +1,5 @@
 /cow
 *.swp
 .vscode/
+debug
+.tags

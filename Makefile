@@ -49,3 +49,6 @@ clean:
 deploy:
 	cd "$(BASEDIR)/deploy" && kubectl apply -f .
 	cd "$(BASEDIR)/deploy" && kubectl apply -f redis/ephemeral
+
+getversion:
+	@echo -n "$(VERSION)"
