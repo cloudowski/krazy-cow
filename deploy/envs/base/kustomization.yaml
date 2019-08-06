@@ -1,0 +1,6 @@
+resources:
+  - cow-configmap.yaml
+  - cow-creds-secret.yaml
+  - cow-deploy.yaml
+  - cow-svc.yaml
+  - cow-tls-secret.yaml
