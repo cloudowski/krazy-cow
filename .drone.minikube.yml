@@ -37,7 +37,7 @@ steps:
   #       from_secret: registry_pass
 
   - name: prepare-new-ns
-    image: alpine
+    image: cloudowski/drone-kustomize:0.1.5
     commands:
       - cd deploy/envs/preview-template
       - NEWNS="kcow2-${DRONE_BRANCH}"
