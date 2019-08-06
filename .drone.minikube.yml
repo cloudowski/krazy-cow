@@ -46,7 +46,7 @@ steps:
       - kustomize edit add resource namespace.yaml
 
   - name: deploy-preview
-    image: cloudowski/drone-kustomize:0.1.6
+    image: cloudowski/drone-kustomize:0.1.7
     settings:
       kubeconfig:
         from_secret: kubeconfig
@@ -57,7 +57,7 @@ steps:
       # dir: prod
 
   - name: deploy-stage
-    image: cloudowski/drone-kustomize:0.1.6
+    image: cloudowski/drone-kustomize:0.1.7
     settings:
       kubeconfig:
         from_secret: kubeconfig
@@ -65,4 +65,4 @@ steps:
       # dir: prod
     when:
       event: [promote]
-      target: [production]
+      target: [stage]
