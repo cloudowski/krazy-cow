@@ -19,8 +19,7 @@ steps:
       # - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags
 
   - name: publish
-    # image: banzaicloud/drone-kaniko:0.3.4
-    image: cloudowski/drone-kaniko:0.3.4
+    image: banzaicloud/drone-kaniko:0.3.4
     settings:
       registry:
         from_secret: registry
