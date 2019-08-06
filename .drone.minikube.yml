@@ -62,6 +62,16 @@ steps:
       event:
         exclude: [promote]
 
+  # - name: deploy-stage
+  #   image: cloudowski/drone-kustomize:0.1.7
+  #   settings:
+  #     kubeconfig:
+  #       from_secret: kubeconfig
+  #     basepath: deploy/envs/stage
+  #   when:
+  #     branch: [tmast1]
+  #     event: tag
+
   - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.7
     settings:
