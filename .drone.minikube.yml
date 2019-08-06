@@ -38,8 +38,12 @@ steps:
 
   - name: deploy-preview
     image: cloudowski/drone-kustomize
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
     commands:
       - echo ${PLUGIN_KUBECONFIG} > kc
+      - cat kc
       - cd deploy/envs/preview
       - kustomize edit set namespace kcow-${DRONE_BRANCH}
       - KUBECONFIG=kc kubectl apply -k .
