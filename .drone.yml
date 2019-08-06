@@ -16,7 +16,7 @@ steps:
       - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
       - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-      # - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags
+      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags
 
   - name: publish
     image: banzaicloud/drone-kaniko:0.3.4
