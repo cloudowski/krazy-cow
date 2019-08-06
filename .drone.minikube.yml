@@ -42,9 +42,7 @@ steps:
       kubeconfig:
         from_secret: kubeconfig
     commands:
-      - env
-      - echo ${PLUGIN_KUBECONFIG} > kc
-      - cat kc
+      - kubectl config view
       - cd deploy/envs/preview
       - kustomize edit set namespace kcow-${DRONE_BRANCH}
       - KUBECONFIG=kc kubectl apply -k .
