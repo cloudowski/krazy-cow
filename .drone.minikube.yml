@@ -42,6 +42,7 @@ steps:
       kubeconfig:
         from_secret: kubeconfig
     commands:
+      - env
       - echo ${PLUGIN_KUBECONFIG} > kc
       - cat kc
       - cd deploy/envs/preview
