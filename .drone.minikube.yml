@@ -37,7 +37,7 @@ steps:
   #       from_secret: registry_pass
 
   - name: deploy-preview
-    image: cloudowski/drone-kustomize:0.1.3
+    image: cloudowski/drone-kustomize:0.1.4
     settings:
       kubeconfig:
         from_secret: kubeconfig
