@@ -1,4 +1,4 @@
-# Features
+# Features 
 
 * pod
   * env from configmap
@@ -27,7 +27,7 @@
 * fun
   * gather milk, prepare pasture
 
-PLANNED
+## PLANNED
 * garfana dashboard with prom metrics
   * eaten turfs
   * restarts
