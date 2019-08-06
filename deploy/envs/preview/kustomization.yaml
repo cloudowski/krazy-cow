@@ -1,0 +1,7 @@
+bases:
+  - ../base
+resources:
+  - namespace.yaml
+patchesStrategicMerge:
+  - cow-deploy.yaml
+namespace: kcow-preview
