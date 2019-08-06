@@ -41,8 +41,8 @@ steps:
     settings:
       kubeconfig:
         from_secret: kubeconfig
-        basepath: deploy/envs/preview
-        x: 2
+      basepath: deploy/envs/preview
+      x: 2
     # commands:
     #   - kubectl config view
     #   - cd deploy/envs/preview
