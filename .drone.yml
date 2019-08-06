@@ -11,7 +11,7 @@ steps:
   - name: build
     image: golang
     commands:
-      # - go get -d
+      - go get -d
       - make build
       - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
