@@ -16,13 +16,13 @@ steps:
     image: golang
     commands:
       # - go get -d
-      - make build
+      # - make build
       - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
       - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
       - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
 
-  - name: publish
+  - name: build-and-publish
     image: banzaicloud/drone-kaniko:0.3.4
     settings:
       registry:
@@ -35,3 +35,7 @@ steps:
         from_secret: registry_user
       password:
         from_secret: registry_pass
+    when:
+      event:
+        - pull_request
+        - tag
