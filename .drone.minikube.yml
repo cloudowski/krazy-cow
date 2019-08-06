@@ -36,9 +36,9 @@ steps:
   #     password:
   #       from_secret: registry_pass
 
-  - name: build
+  - name: deploy-preview
     image: cloudowski/drone-kustomize
     commands:
       - cd deploy/envs/preview
-      - kustomize edit set namespace ${DRONE_BRANCH}-
+      - kustomize edit set namespace kcow-${DRONE_BRANCH}
       - kubectl apply -k .
