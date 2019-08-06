@@ -56,7 +56,7 @@ steps:
       basepath: deploy/envs/preview-template
       # dir: prod
 
-  - name: deploy-preview
+  - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.6
     settings:
       kubeconfig:
