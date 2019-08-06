@@ -46,7 +46,7 @@ steps:
       - kustomize edit add resource namespace.yaml
 
   - name: deploy-preview
-    image: cloudowski/drone-kustomize:0.1.5
+    image: cloudowski/drone-kustomize:0.1.6
     settings:
       kubeconfig:
         from_secret: kubeconfig
@@ -55,3 +55,14 @@ steps:
       # namespace_suffix: ${DRONE_BRANCH}
       basepath: deploy/envs/preview-template
       # dir: prod
+
+  - name: deploy-preview
+    image: cloudowski/drone-kustomize:0.1.6
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
+      basepath: deploy/envs/stage
+      # dir: prod
+    when:
+      event: [promote]
+      target: [production]
