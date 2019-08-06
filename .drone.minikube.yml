@@ -46,3 +46,4 @@ steps:
       - cd deploy/envs/preview
       - kustomize edit set namespace kcow-${DRONE_BRANCH}
       - KUBECONFIG=kc kubectl apply -k .
+      - sleep 300
