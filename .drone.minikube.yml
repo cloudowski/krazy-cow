@@ -44,6 +44,9 @@ steps:
       - kustomize edit set namespace $NEWNS
       - kubectl create ns $NEWNS -o yaml --dry-run > namespace.yaml
       - kustomize edit add resource namespace.yaml
+    when:
+      event:
+        exclude: [promote]
 
   - name: deploy-preview
     image: cloudowski/drone-kustomize:0.1.7
@@ -55,6 +58,9 @@ steps:
       # namespace_suffix: ${DRONE_BRANCH}
       basepath: deploy/envs/preview-template
       # dir: prod
+    when:
+      event:
+        exclude: [promote]
 
   - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.7
@@ -66,3 +72,14 @@ steps:
     when:
       event: [promote]
       target: [stage]
+
+  - name: deploy-prod
+    image: cloudowski/drone-kustomize:0.1.7
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
+      basepath: deploy/envs/prod
+      # dir: prod
+    when:
+      event: [promote]
+      target: [prod]
