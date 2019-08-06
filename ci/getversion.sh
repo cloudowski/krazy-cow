@@ -1,16 +1,21 @@
 #!/bin/sh
 
+set -e
+
 VER=""
 
-TAG="$(git tag -l --points-at HEAD|tail -n1)"
+tag="$(git tag -l --points-at HEAD &> /dev/null|tail -n1)"
 
-if [ "${TAG:-}" ];then
-    VER="$TAG"
-elif [ -f .version ];then
-    VER="$(cat .version)"
-else
-    VER="latest"
+if [ "${tag:-}" ];then
+    VER="$tag"
+elif [ "${GIT_COMMIT:-}" ];then
+    VER="$(echo $GIT_COMMIT|cut -c1-7)"
+elif [ -f .ci_version ];then
+    VER="$(cat .ci_version)"
+elif git rev-parse HEAD|cut -c1-7 &> /dev/null;then
+    VER="$(git rev-parse HEAD|cut -c1-7)"
 fi
+
 
 echo "$VER"
 

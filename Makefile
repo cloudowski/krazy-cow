@@ -17,6 +17,7 @@ all: clean test build
 default: build
 
 build:
+	go get -d
 	go build -ldflags="-w -s -X main.version=$(VERSION) -X main.gitCommit=$(GITCOMMIT)" -o cow *.go
 
 buildimg: 
