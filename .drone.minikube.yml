@@ -37,11 +37,16 @@ steps:
   #       from_secret: registry_pass
 
   - name: deploy-preview
-    image: cloudowski/drone-kustomize:0.1.1
+    image: cloudowski/drone-kustomize:0.1.3
     settings:
       kubeconfig:
         from_secret: kubeconfig
-      basepath: deploy/envs/preview
+      template_path: deploy/envs/preview-template
+      namespace_prefix: kcow
+      namespace_suffix: ${DRONE_BRANCH}
+      basepath: deploy/envs/
+      # dir: prod
+
       x: 2
     # commands:
     #   - kubectl config view
