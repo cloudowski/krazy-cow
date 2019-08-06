@@ -1,7 +1,5 @@
 base:
   - ../base
-resources:
-  - namespace.yaml
 
 images:
   - name: cow
