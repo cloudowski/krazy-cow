@@ -88,13 +88,14 @@ steps:
       # - echo -n "latest"  > .tags
       - git fetch --tags;pwd
       - make getversion > .tags
-      - cat .tags
+      - cat .tags;ls -l
     when:
       event: [pull_request, tag]
 
   - name: publish
     # image: banzaicloud/drone-kaniko:0.3.4
     image: cloudowski/drone-kaniko:0.3.6
+    pull: true
     settings:
       registry:
         from_secret: registry
