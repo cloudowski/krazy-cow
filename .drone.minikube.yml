@@ -1,5 +1,5 @@
 kind: pipeline
-name: default
+name: preview
 
 workspace:
   base: /go
@@ -44,9 +44,6 @@ steps:
       - kustomize edit set namespace $NEWNS
       - kubectl create ns $NEWNS -o yaml --dry-run > namespace.yaml
       - kustomize edit add resource namespace.yaml
-    when:
-      event:
-        exclude: [promote]
 
   - name: deploy-preview
     image: cloudowski/drone-kustomize:0.1.7
@@ -58,19 +55,54 @@ steps:
       # namespace_suffix: ${DRONE_BRANCH}
       basepath: deploy/envs/preview-template
       # dir: prod
-    when:
-      event:
-        exclude: [promote]
 
-  # - name: deploy-stage
-  #   image: cloudowski/drone-kustomize:0.1.7
-  #   settings:
-  #     kubeconfig:
-  #       from_secret: kubeconfig
-  #     basepath: deploy/envs/stage
-  #   when:
-  #     branch: [tmast1]
-  #     event: tag
+when:
+  branch:
+    exclude:
+      - testmaster
+      - master
+
+---
+kind: pipeline
+name: release
+
+workspace:
+  base: /go
+  path: src/github.com/cloudowski/krazy-cow
+
+steps:
+  # - name: test
+  #   image: golang
+  #   commands:
+  #     - go get -d
+  #     - make test
+
+  - name: build
+    image: golang
+    commands:
+      # - go get -d
+      - make build
+      - echo -n "latest"  > .tags
+      - echo -n ",$(make getversion)"  >> .tags
+      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
+    when:
+      event: [tag]
+
+  - name: publish
+    image: banzaicloud/drone-kaniko:0.3.4
+    settings:
+      registry:
+        from_secret: registry
+      repo:
+        from_secret: repo
+      skip_tls_verify: true
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass
+    when:
+      event: [tag]
 
   - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.7
@@ -78,7 +110,6 @@ steps:
       kubeconfig:
         from_secret: kubeconfig
       basepath: deploy/envs/stage
-      # dir: prod
     when:
       event: [promote]
       target: [stage]
@@ -93,3 +124,6 @@ steps:
     when:
       event: [promote]
       target: [prod]
+
+when:
+  branch: [testmaster]
