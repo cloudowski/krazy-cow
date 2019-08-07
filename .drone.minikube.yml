@@ -71,11 +71,11 @@ workspace:
   path: src/github.com/cloudowski/krazy-cow
 
 steps:
-  # - name: test
-  #   image: golang
-  #   commands:
-  #     - go get -d
-  #     - make test
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
 
   - name: build
     image: golang
