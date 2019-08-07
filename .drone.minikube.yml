@@ -89,7 +89,7 @@ steps:
       # - echo -n "latest"  > .tags
       - git fetch --tags;pwd
       - echo "$(make getversion)," > .tags
-      - cat .tags;ls -la
+      # - cat .tags;ls -la
     when:
       event: [pull_request, tag]
 
@@ -128,7 +128,7 @@ steps:
       target: [stage]
 
   - name: deploy-stage
-    image: cloudowski/drone-kustomize:0.1.9
+    image: cloudowski/drone-kustomize:latest
     pull: always
     settings:
       kubeconfig:
