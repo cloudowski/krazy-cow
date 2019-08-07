@@ -106,7 +106,7 @@ steps:
     # when:
     #   event: [tag]
   - name: select-version
-    image: cloudowski/drone-kustomize:0.1.8
+    image: cloudowski/drone-kustomize:0.1.9
     commands:
       - IMGTAG=$(make getversion)
       - cd deploy/envs/prod
@@ -116,7 +116,7 @@ steps:
       target: [stage]
 
   - name: deploy-stage
-    image: cloudowski/drone-kustomize:0.1.7
+    image: cloudowski/drone-kustomize:0.1.9
     settings:
       kubeconfig:
         from_secret: kubeconfig
@@ -126,7 +126,7 @@ steps:
       target: [stage]
 
   - name: deploy-prod
-    image: cloudowski/drone-kustomize:0.1.7
+    image: cloudowski/drone-kustomize:0.1.9
     settings:
       kubeconfig:
         from_secret: kubeconfig
