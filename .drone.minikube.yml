@@ -110,7 +110,8 @@ steps:
       event: [pull_request, tag]
 
   - name: select-version
-    image: cloudowski/drone-kustomize:0.1.9
+    image: cloudowski/drone-kustomize:latest
+    pull: always
     commands:
       - IMGTAG=$(make getversion)
       - cd deploy/envs/stage
@@ -121,6 +122,7 @@ steps:
 
   - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.9
+    pull: always
     settings:
       kubeconfig:
         from_secret: kubeconfig
