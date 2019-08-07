@@ -110,13 +110,14 @@ steps:
     when:
       event: [pull_request, tag]
 
-  - name: select-version
+  - name: select-versionG
     image: cloudowski/drone-kustomize:latest
     pull: always
     commands:
       - IMGTAG=$(make getversion)
       - cd deploy/envs/stage
       - kustomize edit set image cow:$IMGTAG
+      - cat kustomization.yaml
     when:
       event: [promote]
       target: [stage]
