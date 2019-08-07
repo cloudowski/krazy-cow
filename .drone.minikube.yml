@@ -86,8 +86,8 @@ steps:
       # - go get -d
       # - make build
       # - echo -n "latest"  > .tags
-      - Version=$(make getversion)
-      - echo -n ",$(make getversion)"  >> .tags
+      - VERSION=$(make getversion)
+      - echo -n ",$VERSION"  >> .tags
     when:
       event: [pull_request, tag]
 
@@ -142,30 +142,30 @@ trigger:
   ref:
     - refs/heads/testmaster
     - refs/tags/*
----
-kind: pipeline
-name: tag
+# ---
+# kind: pipeline
+# name: tag
 
-workspace:
-  base: /go
-  path: src/github.com/cloudowski/krazy-cow
+# workspace:
+#   base: /go
+#   path: src/github.com/cloudowski/krazy-cow
 
-steps:
-  # - name: test
-  #   image: golang
-  #   commands:
-  #     - go get -d
-  #     - make test
+# steps:
+#   # - name: test
+#   #   image: golang
+#   #   commands:
+#   #     - go get -d
+#   #     - make test
 
-  - name: build
-    image: golang
-    commands:
-      # - go get -d
-      # - make build
-      - echo -n "latest"  > .tags
-      - echo -n ",$(make getversion)"  >> .tags
-      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
+#   - name: build
+#     image: golang
+#     commands:
+#       # - go get -d
+#       # - make build
+#       - echo -n "latest"  > .tags
+#       - echo -n ",$(make getversion)"  >> .tags
+#       - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+#       - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
 
-trigger:
-  event: [tag]
+# trigger:
+#   event: [tag]
