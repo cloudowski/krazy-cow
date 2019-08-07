@@ -84,12 +84,12 @@ steps:
       # - make build
       # - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
+    when:
+      event: [pull_request]
 
-    # when:
-    #   event: [tag]
   - name: publish
-    # image: banzaicloud/drone-kaniko:0.3.4
-    image: cloudowski/drone-kaniko:0.3.5
+    image: banzaicloud/drone-kaniko:0.3.4
+    # image: cloudowski/drone-kaniko:0.3.5
     settings:
       registry:
         from_secret: registry
@@ -100,6 +100,8 @@ steps:
         from_secret: registry_user
       password:
         from_secret: registry_pass
+    when:
+      event: [pull_request]
 
     # when:
     #   event: [tag]
@@ -135,7 +137,6 @@ steps:
 
 trigger:
   branch: [testmaster]
-  event: [pull_request]
 # ---
 # kind: pipeline
 # name: tag
