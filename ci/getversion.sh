@@ -2,7 +2,7 @@
 
 VER=""
 
-TAG="$(git tag -l --points-at HEAD)"
+TAG="$(git tag -l --points-at HEAD|tail -n1)"
 
 if [ "${TAG:-}" ];then
     VER="$TAG"
