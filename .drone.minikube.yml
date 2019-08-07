@@ -134,6 +134,7 @@ steps:
 
 trigger:
   branch: [testmaster]
+  event: [pull_request]
 # ---
 # kind: pipeline
 # name: tag
