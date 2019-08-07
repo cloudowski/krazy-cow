@@ -139,7 +139,9 @@ steps:
       target: [prod]
 
 trigger:
-  branch: [testmaster]
+  ref:
+    - refs/heads/testmaster
+    - refs/tags/*
 ---
 kind: pipeline
 name: tag
