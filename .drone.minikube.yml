@@ -110,7 +110,7 @@ steps:
     commands:
       - IMGTAG=$(make getversion)
       - cd deploy/envs/prod
-      - kustomize edit set image cow:${IMGTAG}
+      - kustomize edit set image cow:$IMGTAG
     when:
       event: [promote]
       target: [stage]
