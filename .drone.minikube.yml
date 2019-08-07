@@ -88,7 +88,8 @@ steps:
     # when:
     #   event: [tag]
   - name: publish
-    image: banzaicloud/drone-kaniko:0.3.4
+    # image: banzaicloud/drone-kaniko:0.3.4
+    image: cloudowski/drone-kaniko:0.3.5
     settings:
       registry:
         from_secret: registry
