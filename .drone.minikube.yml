@@ -117,8 +117,12 @@ steps:
       - git fetch --tags
       - IMGTAG=$(make getversion)
       - cd deploy/envs/stage
-      - kustomize edit set image cow:$IMGTAG
+      - kustomize edit set image cow=$REPO:$IMGTAG
       - cat kustomization.yaml
+    environment:
+      REPO:
+        from_secret: repo
+
     when:
       event: [promote]
       target: [stage]
