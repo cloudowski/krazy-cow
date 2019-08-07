@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cow-config
+data:
+  cowconfig.yaml: |
+    cow:
+      say: "Moooooo, I'm a cow CONTAINER"
+      initmood: 22
+      moodchanger:
+        enabled: false
+        interval: 2
+        change: -1
+      # pasture:
+      #   path: /pasture
+      #   interval: 3
+    # logging:
+    #   requests: true
+    http:
+      port: 8080
+      # tls:
+      #   port: 8443
+      #   enabled: false
+      #   cert: /tls/tls.crt
+      #   key: /tls/tls.key
+      # auth:
+      #   enabled: false
+      #   credentials: /creds/credentials.txt

@@ -1,0 +1,10 @@
+resources:
+  - ../base
+  - namespace.yaml
+
+images:
+  - name: cow
+    newName: harbor.192.168.99.147.nip.io/library/krazy-cow
+    newTag: slim
+
+namespace: kcow-stage
