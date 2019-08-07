@@ -94,8 +94,8 @@ steps:
       event: [pull_request, tag]
 
   - name: publish
-    # image: banzaicloud/drone-kaniko:0.3.4
-    image: cloudowski/drone-kaniko:0.3.6
+    image: banzaicloud/drone-kaniko:0.3.4
+    # image: cloudowski/drone-kaniko:0.3.6
     pull: always
     settings:
       registry:
