@@ -116,11 +116,13 @@ steps:
     commands:
       - git fetch --tags
       - IMGTAG=$(make getversion)
-      - cd deploy/envs/stage && kustomize edit set image cloudowski/krazy-cow=$REPO:$IMGTAG && cd -
-      - cd deploy/envs/prod && kustomize edit set image cloudowski/krazy-cow=$REPO:$IMGTAG && cd -
+      - cd deploy/envs/stage && kustomize edit set image cloudowski/krazy-cow=$REGISTRY/$REPO:$IMGTAG && cd -
+      - cd deploy/envs/prod && kustomize edit set image cloudowski/krazy-cow=$REGISTRY/$REPO:$IMGTAG && cd -
     environment:
       REPO:
         from_secret: repo
+      REGISTRY:
+        from_secret: registry
 
     when:
       event: [promote]
