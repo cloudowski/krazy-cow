@@ -81,16 +81,15 @@ steps:
     image: golang
     commands:
       # - go get -d
-      - make build
-      - echo -n "latest"  > .tags
+      # - make build
+      # - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
-      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
-    when:
-      event: [tag]
 
+    # when:
+    #   event: [tag]
   - name: publish
-    image: banzaicloud/drone-kaniko:0.3.4
+    # image: banzaicloud/drone-kaniko:0.3.4
+    image: cloudowski/drone-kaniko:0.3.5
     settings:
       registry:
         from_secret: registry
@@ -101,8 +100,17 @@ steps:
         from_secret: registry_user
       password:
         from_secret: registry_pass
+
+    # when:
+    #   event: [tag]
+  - name: select-version
+    image: cloudowski/drone-kustomize:0.1.7
+    commands:
+      - cd deploy/envs/prod
+      - kustomize kustomize edit set image cow:$(make getversion)
     when:
-      event: [tag]
+      event: [promote]
+      target: [stage]
 
   - name: deploy-stage
     image: cloudowski/drone-kustomize:0.1.7
@@ -127,31 +135,31 @@ steps:
 
 trigger:
   branch: [testmaster]
+  event: [pull_request]
+# ---
+# kind: pipeline
+# name: tag
 
----
-kind: pipeline
-name: tag
+# workspace:
+#   base: /go
+#   path: src/github.com/cloudowski/krazy-cow
 
-workspace:
-  base: /go
-  path: src/github.com/cloudowski/krazy-cow
+# steps:
+#   # - name: test
+#   #   image: golang
+#   #   commands:
+#   #     - go get -d
+#   #     - make test
 
-steps:
-  # - name: test
-  #   image: golang
-  #   commands:
-  #     - go get -d
-  #     - make test
+#   - name: build
+#     image: golang
+#     commands:
+#       # - go get -d
+#       - make build
+#       - echo -n "latest"  > .tags
+#       - echo -n ",$(make getversion)"  >> .tags
+#       - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+#       - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
 
-  - name: build
-    image: golang
-    commands:
-      # - go get -d
-      - make build
-      - echo -n "latest"  > .tags
-      - echo -n ",$(make getversion)"  >> .tags
-      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
-
-trigger:
-  event: [tag]
+# trigger:
+#   event: [tag]
