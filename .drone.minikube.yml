@@ -113,7 +113,7 @@ steps:
     image: cloudowski/drone-kustomize:0.1.9
     commands:
       - IMGTAG=$(make getversion)
-      - cd deploy/envs/prod
+      - cd deploy/envs/stage
       - kustomize edit set image cow:$IMGTAG
     when:
       event: [promote]
