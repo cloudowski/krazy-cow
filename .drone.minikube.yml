@@ -126,7 +126,7 @@ steps:
 
     when:
       event: [promote]
-      target: [stage]
+      target: [stage, prod]
 
   - name: deploy-stage
     image: cloudowski/drone-kustomize:latest
