@@ -86,8 +86,8 @@ steps:
       # - go get -d
       # - make build
       # - echo -n "latest"  > .tags
+      - git fetch --tags
       - VERSION=$(make getversion)
-      - git tag -l; ls -la;pwd
       - echo -n "$VERSION"  > .tags
       - cat .tags
     when:
