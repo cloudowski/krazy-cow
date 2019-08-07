@@ -88,7 +88,7 @@ steps:
       # - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
     when:
-      event: [pull_request]
+      event: [pull_request, tag]
 
   - name: publish
     image: banzaicloud/drone-kaniko:0.3.4
@@ -104,7 +104,7 @@ steps:
       password:
         from_secret: registry_pass
     when:
-      event: [pull_request]
+      event: [pull_request, tag]
 
     # when:
     #   event: [tag]
