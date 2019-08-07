@@ -110,10 +110,11 @@ steps:
     when:
       event: [pull_request, tag]
 
-  - name: select-versionG
+  - name: select-version
     image: cloudowski/drone-kustomize:latest
     pull: always
     commands:
+      - git fetch --tags
       - IMGTAG=$(make getversion)
       - cd deploy/envs/stage
       - kustomize edit set image cow:$IMGTAG
