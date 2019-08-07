@@ -116,9 +116,8 @@ steps:
     commands:
       - git fetch --tags
       - IMGTAG=$(make getversion)
-      - cd deploy/envs/stage
-      - kustomize edit set image cloudowski/krazy-cow=$REPO:$IMGTAG
-      - cat kustomization.yaml
+      - cd deploy/envs/stage && kustomize edit set image cloudowski/krazy-cow=$REPO:$IMGTAG && cd -
+      - cd deploy/envs/prod && kustomize edit set image cloudowski/krazy-cow=$REPO:$IMGTAG && cd -
     environment:
       REPO:
         from_secret: repo
