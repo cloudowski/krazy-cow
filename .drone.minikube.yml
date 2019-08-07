@@ -71,17 +71,17 @@ workspace:
   path: src/github.com/cloudowski/krazy-cow
 
 steps:
-  - name: test
-    image: golang
-    commands:
-      - go get -d
-      - make test
+  # - name: test
+  #   image: golang
+  #   commands:
+  #     - go get -d
+  #     - make test
 
   - name: build
     image: golang
     commands:
       # - go get -d
-      - make build
+      # - make build
       # - echo -n "latest"  > .tags
       - echo -n ",$(make getversion)"  >> .tags
 
