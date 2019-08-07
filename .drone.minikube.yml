@@ -87,7 +87,7 @@ steps:
       # - make build
       # - echo -n "latest"  > .tags
       - git fetch --tags;pwd
-      - make getversion > .tags
+      - echo "$(make getversion)," > .tags
       - cat .tags;ls -la
     when:
       event: [pull_request, tag]
