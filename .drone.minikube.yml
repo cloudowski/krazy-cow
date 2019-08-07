@@ -87,14 +87,15 @@ steps:
       # - make build
       # - echo -n "latest"  > .tags
       - VERSION=$(make getversion)
+      - git tag -l
       - echo -n "$VERSION"  > .tags
       - cat .tags
     when:
       event: [pull_request, tag]
 
   - name: publish
-    image: banzaicloud/drone-kaniko:0.3.4
-    # image: cloudowski/drone-kaniko:0.3.5
+    # image: banzaicloud/drone-kaniko:0.3.4
+    image: cloudowski/drone-kaniko:0.3.5
     settings:
       registry:
         from_secret: registry
