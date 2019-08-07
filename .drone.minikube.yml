@@ -56,7 +56,7 @@ steps:
       basepath: deploy/envs/preview-template
       # dir: prod
 
-when:
+trigger:
   branch:
     exclude:
       - testmaster
@@ -125,5 +125,5 @@ steps:
       event: [promote]
       target: [prod]
 
-when:
+trigger:
   branch: [testmaster]
