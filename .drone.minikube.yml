@@ -106,10 +106,10 @@ steps:
     # when:
     #   event: [tag]
   - name: select-version
-    image: cloudowski/drone-kustomize:0.1.7
+    image: cloudowski/drone-kustomize:0.1.8
     commands:
       - cd deploy/envs/prod
-      - kustomize kustomize edit set image cow:$(make getversion)
+      - kustomize edit set image cow:$(make getversion)
     when:
       event: [promote]
       target: [stage]
