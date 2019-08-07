@@ -106,8 +106,6 @@ steps:
     when:
       event: [pull_request, tag]
 
-    # when:
-    #   event: [tag]
   - name: select-version
     image: cloudowski/drone-kustomize:0.1.9
     commands:
