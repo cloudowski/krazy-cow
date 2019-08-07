@@ -86,9 +86,10 @@ steps:
       # - go get -d
       # - make build
       # - echo -n "latest"  > .tags
+      - Version=$(make getversion)
       - echo -n ",$(make getversion)"  >> .tags
     when:
-      event: [pull_request]
+      event: [pull_request, tag]
 
   - name: publish
     image: banzaicloud/drone-kaniko:0.3.4
@@ -104,10 +105,8 @@ steps:
       password:
         from_secret: registry_pass
     when:
-      event: [pull_request]
+      event: [pull_request, tag]
 
-    # when:
-    #   event: [tag]
   - name: select-version
     image: cloudowski/drone-kustomize:0.1.9
     commands:
