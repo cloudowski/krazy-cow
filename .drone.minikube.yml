@@ -6,35 +6,35 @@ workspace:
   path: src/github.com/cloudowski/krazy-cow
 
 steps:
-  # - name: test
-  #   image: golang
-  #   commands:
-  #     - go get -d
-  #     - make test
-  #
-  # - name: build
-  #   image: golang
-  #   commands:
-  #     # - go get -d
-  #     - make build
-  #     - echo -n "latest"  > .tags
-  #     - echo -n ",$(make getversion)"  >> .tags
-  #     - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-  #     - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
-  #
-  # - name: publish
-  #   image: banzaicloud/drone-kaniko:0.3.4
-  #   settings:
-  #     registry:
-  #       from_secret: registry
-  #     repo:
-  #       from_secret: repo
-  #     # tags: ${DRONE_COMMIT_SHA}
-  #     skip_tls_verify: true
-  #     username:
-  #       from_secret: registry_user
-  #     password:
-  #       from_secret: registry_pass
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
+
+  - name: build
+    image: golang
+    commands:
+      # - go get -d
+      - make build
+      - echo -n "latest"  > .tags
+      - echo -n ",$(make getversion)"  >> .tags
+      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
+
+  - name: publish
+    image: banzaicloud/drone-kaniko:0.3.4
+    settings:
+      registry:
+        from_secret: registry
+      repo:
+        from_secret: repo
+      # tags: ${DRONE_COMMIT_SHA}
+      skip_tls_verify: true
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass
 
   - name: prepare-new-ns
     image: cloudowski/drone-kustomize:0.1.5
@@ -75,27 +75,24 @@ workspace:
   path: src/github.com/cloudowski/krazy-cow
 
 steps:
-  # - name: test
-  #   image: golang
-  #   commands:
-  #     - go get -d
-  #     - make test
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
 
   - name: build
     image: golang
     commands:
       # - go get -d
       # - make build
-      # - echo -n "latest"  > .tags
       - git fetch --tags;pwd
       - echo "$(make getversion)," > .tags
-      # - cat .tags;ls -la
     when:
       event: [pull_request, tag]
 
   - name: publish
     image: banzaicloud/drone-kaniko:0.3.4
-    # image: cloudowski/drone-kaniko:0.3.6
     pull: always
     settings:
       registry:
@@ -154,30 +151,3 @@ trigger:
   ref:
     - refs/heads/testmaster
     - refs/tags/*
-# ---
-# kind: pipeline
-# name: tag
-
-# workspace:
-#   base: /go
-#   path: src/github.com/cloudowski/krazy-cow
-
-# steps:
-#   # - name: test
-#   #   image: golang
-#   #   commands:
-#   #     - go get -d
-#   #     - make test
-
-#   - name: build
-#     image: golang
-#     commands:
-#       # - go get -d
-#       # - make build
-#       - echo -n "latest"  > .tags
-#       - echo -n ",$(make getversion)"  >> .tags
-#       - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
-#       - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
-
-# trigger:
-#   event: [tag]
