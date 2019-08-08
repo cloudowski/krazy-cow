@@ -1,0 +1,153 @@
+kind: pipeline
+name: preview
+
+workspace:
+  base: /go
+  path: src/github.com/cloudowski/krazy-cow
+
+steps:
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
+
+  - name: build
+    image: golang
+    commands:
+      # - go get -d
+      - make build
+      - echo -n "latest"  > .tags
+      - echo -n ",$(make getversion)"  >> .tags
+      - echo -n ",${DRONE_COMMIT}"|cut -c1-7  >> .tags
+      - test -n "$DRONE_TAG" && echo -n ",${DRONE_TAG}"  >> .tags || true
+
+  - name: publish
+    image: banzaicloud/drone-kaniko:0.3.4
+    settings:
+      registry:
+        from_secret: registry
+      repo:
+        from_secret: repo
+      # tags: ${DRONE_COMMIT_SHA}
+      skip_tls_verify: true
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass
+
+  - name: prepare-new-ns
+    image: cloudowski/drone-kustomize:0.1.5
+    commands:
+      - cd deploy/envs/preview-template
+      - NEWNS="kcow2-${DRONE_BRANCH}"
+      - kustomize edit set namespace $NEWNS
+      - kubectl create ns $NEWNS -o yaml --dry-run > namespace.yaml
+      - kustomize edit add resource namespace.yaml
+
+  - name: deploy-preview
+    image: cloudowski/drone-kustomize:0.1.7
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
+      # template_path: deploy/envs/preview-template
+      # namespace_prefix: kcow
+      # namespace_suffix: ${DRONE_BRANCH}
+      basepath: deploy/envs/preview-template
+      # dir: prod
+
+trigger:
+  branch:
+    exclude:
+      - testmaster
+      - master
+  event:
+    exclude:
+      - tag
+      - promote
+
+---
+kind: pipeline
+name: release
+
+workspace:
+  base: /go
+  path: src/github.com/cloudowski/krazy-cow
+
+steps:
+  - name: test
+    image: golang
+    commands:
+      - go get -d
+      - make test
+
+  - name: build
+    image: golang
+    commands:
+      # - go get -d
+      # - make build
+      - git fetch --tags;pwd
+      - echo "$(make getversion)," > .tags
+    when:
+      event: [pull_request, tag]
+
+  - name: publish
+    image: banzaicloud/drone-kaniko:0.3.4
+    pull: always
+    settings:
+      registry:
+        from_secret: registry
+      repo:
+        from_secret: repo
+      skip_tls_verify: true
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass
+    when:
+      event: [pull_request, tag]
+
+  - name: select-version
+    image: cloudowski/drone-kustomize:latest
+    pull: always
+    commands:
+      - git fetch --tags
+      - IMGTAG=$(make getversion)
+      - cd deploy/envs/stage && kustomize edit set image cloudowski/krazy-cow=$REGISTRY/$REPO:$IMGTAG && cd -
+      - cd deploy/envs/prod && kustomize edit set image cloudowski/krazy-cow=$REGISTRY/$REPO:$IMGTAG && cd -
+    environment:
+      REPO:
+        from_secret: repo
+      REGISTRY:
+        from_secret: registry
+
+    when:
+      event: [promote]
+      target: [stage, prod]
+
+  - name: deploy-stage
+    image: cloudowski/drone-kustomize:latest
+    pull: always
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
+      basepath: deploy/envs/stage
+    when:
+      event: [promote]
+      target: [stage]
+
+  - name: deploy-prod
+    image: cloudowski/drone-kustomize:0.1.9
+    settings:
+      kubeconfig:
+        from_secret: kubeconfig
+      basepath: deploy/envs/prod
+      # dir: prod
+    when:
+      event: [promote]
+      target: [prod]
+
+trigger:
+  ref:
+    - refs/heads/testmaster
+    - refs/tags/*

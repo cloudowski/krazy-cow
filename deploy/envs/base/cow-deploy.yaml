@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cow
+  labels:
+    app: cow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cow
+      # herd: blue
+  template:
+    metadata:
+      labels:
+        app: cow
+        # herd: blue
+    spec:
+      # terminationGracePeriodSeconds: 5
+
+      containers:
+        - image: cloudowski/krazy-cow:latest
+          imagePullPolicy: Always
+          name: cow
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              # path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 2
+
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
+
+          volumeMounts:
+            - name: cow-config
+              mountPath: /config/
+            - name: cow-tls
+              mountPath: /tls/
+            - name: cow-creds
+              mountPath: /creds/
+            # - name: pasture
+            # mountPath: /pasture
+
+      volumes:
+        - name: cow-config
+          configMap:
+            name: cow-config
+        - name: cow-tls
+          secret:
+            secretName: cow-tls
+        - name: cow-creds
+          secret:
+            secretName: cow-creds
+        - name: pasture

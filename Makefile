@@ -2,11 +2,12 @@ SHELL = /bin/bash
 NAME ?= cloudowski/krazy-cow
 SHORTNAME = krazy-cow
 
-VERSION = $(shell git tag -l --points-at HEAD)
+#VERSION = $(shell git tag -l --points-at HEAD)
+#ifeq ($(VERSION),)
+#	VERSION=latest
+#endif
+VERSION = $(shell ci/getversion.sh)
 GITCOMMIT = $(shell git rev-list -1 HEAD --abbrev-commit)
-ifeq ($(VERSION),)
-	VERSION=latest
-endif
 
 BASEDIR = $(shell pwd)
 
