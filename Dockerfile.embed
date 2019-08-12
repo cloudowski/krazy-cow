@@ -1,7 +1,8 @@
-FROM alpine
+FROM debian:buster-slim
 WORKDIR /app
-COPY cowconfig.yaml .
+COPY config /app/config/
+COPY web /app/web/
 COPY cow  .
 EXPOSE 8080
-USER 1001
+USER nobody
 ENTRYPOINT [ "/app/cow" ]

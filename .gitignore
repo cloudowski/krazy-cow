@@ -3,3 +3,4 @@
 .vscode/
 debug
 .tags
+.ci*
