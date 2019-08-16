@@ -20,6 +20,8 @@ pipeline {
             steps {
                 // sh 'env|sort'
                 sh 'go get -d'
+                // https://github.com/kubernetes/client-go/issues/656#issuecomment-521808985
+                sh 'sh 'go get k8s.io/klog && cd $GOPATH/src/k8s.io/klog && git checkout v0.4.0'
                 sh 'make test'
                 sh 'make build'
                 // sh 'echo -e "#!/bin/sh\ncat" > cow;chmod +x cow'
