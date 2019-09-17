@@ -1,6 +1,6 @@
 # build stage
 # FROM golang:alpine AS build-env
-FROM golang:1.12-buster AS build-env
+FROM golang:1.13-buster AS build-env
 ARG VERSION
 ARG GITCOMMIT
 RUN apt-get update && apt-get install --no-install-recommends -y git
