@@ -4,7 +4,7 @@ set -e
 
 VER=""
 
-tag="$(git tag -l --points-at HEAD &> /dev/null|tail -n1)"
+tag="$(git tag -l --points-at HEAD 2> /dev/null|tail -n1)"
 
 if [ "${tag:-}" ];then
     VER="$tag"
