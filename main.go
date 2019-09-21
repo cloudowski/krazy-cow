@@ -11,16 +11,23 @@ import (
 
 	"github.com/mssola/user_agent"
 	"github.com/op/go-logging"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"gitlab.com/cloudowski/krazy-cow/pkg/cow"
 	"gitlab.com/cloudowski/krazy-cow/pkg/shepherd"
 )
 
-var c cow.Cow
-var cowconf *viper.Viper
-
-var logger *logging.Logger
+var (
+	c               cow.Cow
+	cowconf         *viper.Viper
+	logger          *logging.Logger
+	metric_requests = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "container_cow_requests",
+		Help: "The total number of processed requests",
+	})
+)
 
 func init() {
 	c = cow.NewCow()
@@ -127,6 +134,7 @@ func logwrap(h http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.Requests++
+		metric_requests.Inc()
 		// ua := r.UserAgent()
 		ua := user_agent.New(r.UserAgent())
 		browser, _ := ua.Browser()
