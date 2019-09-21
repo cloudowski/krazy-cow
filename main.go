@@ -24,7 +24,7 @@ var (
 	cowconf         *viper.Viper
 	logger          *logging.Logger
 	metric_requests = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "container_cow_requests",
+		Name: "cow_requests",
 		Help: "The total number of processed requests",
 	})
 )
