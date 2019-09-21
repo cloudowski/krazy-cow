@@ -2,7 +2,7 @@
 
 # Krazy Cow
 
-```
+```ascii
            (    )
             (oo)
    )\.-----/(O O)
@@ -28,6 +28,9 @@ It also fun to play with!
 * "Shepherd" (redis) can be a destination for access logs 
 * When "pasture" location is provided to a cow with tufts (files `tuft*`) then it is being periodically eaten by a cow increasing its mood AND producing a milk; if a shepherd is available then it is sent to a `dairy` (a key with that name in redis); when there are no tufts left in pasture a cow mood is decreased
 * Cow can be set free using `/setfree` endpoint. Optionally it can be secured with basic http authentication.
+* Two custom metrics are available at `/metrics` endpoint:
+  * `cow_requests` with request count
+  * `cow_mood` with current mood of a cow
 
 
 # Endpoints
@@ -52,7 +55,7 @@ Start a cow with environment variable set with the following scheme:
 
 For the following variable
 
-```
+```yaml
 cow:
   say: "Moo"
 
@@ -64,7 +67,7 @@ override with `KC_COW_SAY="Hello"`
 
 By default tls is **disabled**. To enable make sure your config the following entries:
 
-```
+```yaml
 http:
     port: 8080 # <-- this is default port
     tls:
@@ -83,6 +86,6 @@ Credentials must be put in a file in this very simple format: **`USERNAME:PASSWO
 
 To enable access to Kubernetes api and enable features of herd discovery a rolebinding is required. To create it simply add it with a command:
 
-```
+```shell
 kubectl create clusterrolebinding cowview --clusterrole=view --serviceaccount=default:default
 ```

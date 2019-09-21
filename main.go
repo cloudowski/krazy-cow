@@ -11,16 +11,27 @@ import (
 
 	"github.com/mssola/user_agent"
 	"github.com/op/go-logging"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"gitlab.com/cloudowski/krazy-cow/pkg/cow"
 	"gitlab.com/cloudowski/krazy-cow/pkg/shepherd"
 )
 
-var c cow.Cow
-var cowconf *viper.Viper
-
-var logger *logging.Logger
+var (
+	c              cow.Cow
+	cowconf        *viper.Viper
+	logger         *logging.Logger
+	metricRequests = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "cow_requests",
+		Help: "The total number of processed requests",
+	})
+	metricCowMood = promauto.NewGaugeFunc(prometheus.GaugeOpts{
+		Name: "cow_mood",
+		Help: "Numeric value representing mood of the cow",
+	}, getCowMood)
+)
 
 func init() {
 	c = cow.NewCow()
@@ -103,22 +114,22 @@ func main() {
 
 	http.HandleFunc("/healthz", logwrap(c.Healthcheck))
 
-	http_port := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
-	https_port := fmt.Sprintf(":%s", cowconf.GetString("http.tls.port"))
+	httpPort := fmt.Sprintf(":%s", cowconf.GetString("http.port"))
+	httpsPort := fmt.Sprintf(":%s", cowconf.GetString("http.tls.port"))
 	if cowconf.GetBool("http.tls.enabled") {
-		logger.Noticef("Starting https version on %s", https_port)
+		logger.Noticef("Starting https version on %s", httpsPort)
 		go func() {
 
-			if err := http.ListenAndServeTLS(https_port, cowconf.GetString("http.tls.cert"), cowconf.GetString("http.tls.key"), nil); err != nil {
+			if err := http.ListenAndServeTLS(httpsPort, cowconf.GetString("http.tls.cert"), cowconf.GetString("http.tls.key"), nil); err != nil {
 				logger.Fatal(err)
 			}
 
 		}()
 	}
 
-	logger.Noticef("Starting plain http version on %s", http_port)
+	logger.Noticef("Starting plain http version on %s", httpPort)
 
-	if err := http.ListenAndServe(http_port, nil); err != nil {
+	if err := http.ListenAndServe(httpPort, nil); err != nil {
 		logger.Fatal(err)
 	}
 }
@@ -127,6 +138,7 @@ func logwrap(h http.HandlerFunc) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		c.Requests++
+		metricRequests.Inc()
 		// ua := r.UserAgent()
 		ua := user_agent.New(r.UserAgent())
 		browser, _ := ua.Browser()
@@ -135,13 +147,13 @@ func logwrap(h http.HandlerFunc) http.HandlerFunc {
 			logger.Infof("%v uri: %v host: %v, user-agent: %s", c.Requests, r.RequestURI, r.RemoteAddr, r.UserAgent())
 		}
 		shepherd.SendStats(c.Name, fmt.Sprintf("%v %v %v", r.RequestURI, r.RemoteAddr, browser))
-		r.Header.Set(cow.HeaderHttpTextClientKey, fmt.Sprintf("%v", isHttpTextClient(browser)))
+		r.Header.Set(cow.HeaderHttpTextClientKey, fmt.Sprintf("%v", isHTTPTextClient(browser)))
 		h(w, r)
 	}
 
 }
 
-func isHttpTextClient(useragent string) bool {
+func isHTTPTextClient(useragent string) bool {
 	r := regexp.MustCompile("(?i)(curl)|(wget)")
 	return r.MatchString(useragent)
 
@@ -174,7 +186,10 @@ func readCreds(file string) (string, string, error) {
 
 	if len(creds) == 2 {
 		return creds[0], creds[1], nil
-	} else {
-		return "", "", fmt.Errorf("Failed to read credentials from %s", file)
 	}
+	return "", "", fmt.Errorf("Failed to read credentials from %s", file)
+}
+
+func getCowMood() float64 {
+	return float64(c.GetMood())
 }
