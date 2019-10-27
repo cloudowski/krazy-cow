@@ -1,0 +1,15 @@
+apiVersion: v2
+name: krazy-cow
+description: A Helm chart for Kubernetes
+type: application
+
+version: 0.1.1
+appVersion: 0.3.0
+home: https://github.com/cloudowski/krazy-cow
+sources:
+  - https://github.com/cloudowski/krazy-cow
+maintainers:
+  - name: Tomasz Cholewa
+    email: tomasz@cloudowski.com
+    url: https://cloudowski.com
+icon: https://image.flaticon.com/icons/svg/1998/1998610.svg

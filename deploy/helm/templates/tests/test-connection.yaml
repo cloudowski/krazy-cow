@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "krazy-cow.fullname" . }}-test-connection"
+  labels:
+{{ include "krazy-cow.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: alpine
+      image: alpine
+      command: ['sh', '-cxe']
+      args: 
+      - apk add curl; 
+        curl -v -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }} | tee /dev/stderr |grep ^200$ || echo "HTTP returned error";
+        {{- if .Values.cowconfig.http.tls.enabled }}
+          curl -v -k -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpsPort }} | tee /dev/stderr| grep  ^200$ || echo "HTTPS returned error";
+        {{- end }}
+        {{- if .Values.cowconfig.http.auth.enabled }}
+          curl -v -w "%{http_code}" http://`cat /creds/credentials.txt`@{{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }}/setfree |tee /dev/stderr | grep  ')200$' || echo "AUTH endpoint returned error";
+        {{- end }}
+        echo "PASSED";exit 0;
+
+      volumeMounts:
+        - name: config
+          mountPath: /config/
+        {{- if .Values.cowconfig.http.auth.enabled }}
+        - name: cow-creds
+          mountPath: /creds/
+        {{- end }}
+
+  restartPolicy: Never
+  volumes:
+    - name: config
+      configMap:
+        name: {{ template "krazy-cow.fullname" . }}-config
+  {{- if .Values.cowconfig.http.auth.enabled }}
+    - name: cow-creds
+      secret:
+        secretName: {{ include "krazy-cow.fullname" . }}-creds
+  {{- end }}

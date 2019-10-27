@@ -18,11 +18,9 @@ pipeline {
                 }
             }
             steps {
-                // sh 'env|sort'
                 sh 'go get -d'
                 sh 'make test'
                 sh 'make build'
-                // sh 'echo -e "#!/bin/sh\ncat" > cow;chmod +x cow'
                 stash name: "app", includes: "cow"
             }
         }

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "krazy-cow.fullname" . }}-config
+  labels:
+    {{- include "krazy-cow.labels" . | nindent 4 }}
+data:
+  cowconfig.yaml: |
+{{ toYaml .Values.cowconfig | indent 4 }}
