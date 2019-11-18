@@ -70,7 +70,7 @@ pipeline {
                     allOf {
                         changelog '^shipit ?.+$'
                         expression {
-                            ! (env.GIT_BRANCH =~ /^(master|testmaster)$/)
+                            ! (env.GIT_BRANCH =~ /(\/|^)(test|)master$/)
                         }
                     }
                     expression {
@@ -100,7 +100,7 @@ pipeline {
                 allOf {
                     // changelog '^deploy ?.+$'
                     expression {
-                        (env.GIT_BRANCH =~ /^(master|testmaster)$/)
+                        (env.GIT_BRANCH =~ /(\/|^)(test|)master$/)
                     }
                 }
             }
@@ -132,7 +132,7 @@ pipeline {
             when {
                 // beforeInput true
                 expression {
-                    (env.GIT_BRANCH =~ /^(master|testmaster)$/)
+                    (env.GIT_BRANCH =~ /(\/|^)(test|)master$/)
                 }
             }
         }
