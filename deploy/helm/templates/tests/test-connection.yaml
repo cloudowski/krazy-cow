@@ -13,12 +13,12 @@ spec:
       command: ['sh', '-cxe']
       args: 
       - apk add curl; 
-        curl -v -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }} | tee /dev/stderr |grep ^200$ || echo "HTTP returned error";
+        curl -v -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }} | tee /dev/stderr |grep ^200$ || { echo "HTTP returned error"; exit 1; };
         {{- if .Values.cowconfig.http.tls.enabled }}
-          curl -v -k -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpsPort }} | tee /dev/stderr| grep  ^200$ || echo "HTTPS returned error";
+          curl -v -k -w "%{http_code}" {{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpsPort }} | tee /dev/stderr| grep  ^200$ || { echo "HTTPS returned error"; exit 1; };
         {{- end }}
         {{- if .Values.cowconfig.http.auth.enabled }}
-          curl -v -w "%{http_code}" http://`cat /creds/credentials.txt`@{{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }}/setfree |tee /dev/stderr | grep  ')200$' || echo "AUTH endpoint returned error";
+          curl -v -w "%{http_code}" http://`cat /creds/credentials.txt`@{{ include "krazy-cow.fullname" . }}:{{ .Values.service.httpPort }}/setfree |tee /dev/stderr | grep  ')200$' || { echo "AUTH endpoint returned error"; exit 1; };
         {{- end }}
         echo "PASSED";exit 0;
 
