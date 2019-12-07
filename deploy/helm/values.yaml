@@ -89,7 +89,7 @@ cowconfig:
     port: 8080
     tls:
       port: 8443
-      enabled: true
+      enabled: false
       cert: /tls/tls.crt
       key: /tls/tls.key
     auth:
