@@ -23,25 +23,6 @@ jobs:
           root: .
           paths:
             - app/
-  build-and-publish:
-    environment:
-      IMAGE_NAME: cloudowski/krazy-cow
-    docker:
-      - image: circleci/buildpack-deps:stretch
-    steps:
-      - checkout
-      - setup_remote_docker
-      - attach_workspace:
-          at: app
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t $IMAGE_NAME:dev -f Dockerfile.ci .
-      - run:
-          name: Publish Docker image
-          command: |
-            echo "$DOCKERHUB_PASSWORD" | base64 --decode| docker login -u cloudowski --password-stdin
-            docker push $IMAGE_NAME:dev
 
 workflows:
   version: 2
@@ -57,6 +38,20 @@ workflows:
                 at: app
           requires:
             - build-app
-      # - build-and-publish:
-      #     requires:
-      #       - build-app
+          filters:
+            branches:
+              ignore: master
+      - docker/publish:
+          dockerfile: Dockerfile.ci
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          tag: "$CIRCLE_TAG,latest"
+          before_build:
+            - attach_workspace:
+                at: app
+          requires:
+            - build-app
+          filters:
+            tags:
+              only: /^[0-9].*/
+            branches:
+              ignore: /.*/
