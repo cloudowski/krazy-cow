@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 jobs:
   build-app:
     docker:
@@ -30,10 +30,10 @@ jobs:
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
-      - attach_workspace:
-          at: app
       - checkout
       - setup_remote_docker
+      - attach_workspace:
+          at: app
       - run:
           name: Build Docker image
           command: |
