@@ -40,11 +40,14 @@ jobs:
             cp -a /tmp/workspace/app .
             docker build -t $IMAGE_NAME:dev -f Dockerfile.ci .
 
-# workflows:
-#   version: 2
-#   build-master:
-#     jobs:
-#       - build:
+workflows:
+  version: 2
+  build-master:
+    jobs:
+      - build-app
+      - build-and-publish:
+          requires:
+            - build-app
 #           filters:
 #             branches:
 #               only: master
