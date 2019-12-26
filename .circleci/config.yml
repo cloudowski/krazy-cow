@@ -69,7 +69,6 @@ workflows:
           <<: *docker-defaults
           tag: dev
           requires:
-            - build-app
             - smoketest
           filters:
             branches:
@@ -79,7 +78,7 @@ workflows:
           <<: *docker-defaults
           tag: "$CIRCLE_TAG,latest"
           requires:
-            - build-app
+            - smoketest
           filters:
             tags:
               only: /^[0-9]+.*/
