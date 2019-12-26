@@ -3,4 +3,4 @@ WORKDIR /app
 COPY app/ .
 EXPOSE 8080
 USER nobody
-ENTRYPOINT [ "/app/goapp" ]
+ENTRYPOINT [ "/app/krazycow" ]
