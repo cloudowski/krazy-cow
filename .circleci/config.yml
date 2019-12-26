@@ -30,6 +30,7 @@ jobs:
       - image: circleci/buildpack-deps:stretch
     steps:
       - checkout
+      - setup_remote_docker
       - attach_workspace:
           at: app
       - run: |
@@ -66,6 +67,7 @@ workflows:
                 at: app
           requires:
             - build-app
+            - smoke-test
           filters:
             branches:
               ignore: master
