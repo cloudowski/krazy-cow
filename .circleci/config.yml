@@ -7,7 +7,7 @@ jobs:
     working_directory: /go/src/github.com/cloudowski/krazy-cow
     steps:
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: .
           paths:
             - app/
       - checkout
@@ -18,8 +18,9 @@ jobs:
           export VERSION=latest
           export TAG=${CIRCLE_TAG:0:7}
           [ -n "$CIRCLE_TAG" ] && VERSION="$TAG" 
-          go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$TAG" -o /tmp/workspace/app/krazycow
-          cp -a config web /tmp/workspace/app/
+          mkdir app
+          go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$TAG" -o app/krazycow
+          cp -a config web app/
           echo "Version built: $VERSION ($TAG)"
       # - store_artifacts:
       #     path: krazycow
@@ -31,13 +32,13 @@ jobs:
       - image: circleci/buildpack-deps:stretch
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: app
       - checkout
       - setup_remote_docker
       - run:
           name: Build Docker image
           command: |
-            cp -a /tmp/workspace/app .
+            # cp -a /tmp/workspace/app .
             docker build -t $IMAGE_NAME:dev -f Dockerfile.ci .
 
 workflows:
