@@ -29,6 +29,11 @@ workflows:
   build-krazycow:
     jobs:
       - build-app
+        filters:
+          tags:
+            only: /^[0-9]+.*/
+          branches:
+            only: /.*/
       # publish "dev" version
       - docker/publish:
           dockerfile: Dockerfile.ci
