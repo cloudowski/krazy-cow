@@ -55,6 +55,8 @@ workflows:
           before_build:
             - attach_workspace:
                 at: app
+          requires:
+            - build-app
       # - build-and-publish:
       #     requires:
       #       - build-app
