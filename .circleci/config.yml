@@ -1,4 +1,6 @@
-version: 2
+orbs:
+  docker: circleci/docker@0.5.20
+version: 2.1
 jobs:
   build-app:
     docker:
@@ -21,9 +23,6 @@ jobs:
           root: .
           paths:
             - app/
-      # - store_artifacts:
-      #     path: krazycow
-      #     destination: krazycow
   build-and-publish:
     environment:
       IMAGE_NAME: cloudowski/krazy-cow
@@ -49,9 +48,12 @@ workflows:
   build-krazycow:
     jobs:
       - build-app
-      - build-and-publish:
-          requires:
-            - build-app
-#           filters:
-#             branches:
-#               only: master
+      - docker/publish:
+          dockerfile: Dockerfile.ci
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          tag: dev
+          attach-workspace: true
+          workspace-root: app
+      # - build-and-publish:
+      #     requires:
+      #       - build-app
