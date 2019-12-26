@@ -12,9 +12,10 @@ jobs:
       - run: go test -v ./...
       - run: |
           export VERSION=latest
-          [ -n "$CIRCLE_TAG" ] && VERSION="$CIRCLE_TAG" 
-          go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$CIRCLE_SHA1" -o krazycow
-          echo "Version built: $VERSION ($CIRCLE_SHA1)"
+          export TAG=${CIRCLE_TAG:0:7}
+          [ -n "$CIRCLE_TAG" ] && VERSION="$TAG" 
+          go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$TAG" -o krazycow
+          echo "Version built: $VERSION ($TAG)"
       - store_artifacts:
           path: krazycow
           destination: krazycow
