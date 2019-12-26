@@ -1,5 +1,6 @@
 orbs:
   docker: circleci/docker@0.5.20
+
 version: 2.1
 jobs:
   build-app:
@@ -13,7 +14,7 @@ jobs:
       - run: go test -v ./...
       - run: |
           export VERSION=latest
-          export TAG=${CIRCLE_TAG:0:7}
+          export TAG=${CIRCLE_SHA1:0:7}
           [ -n "$CIRCLE_TAG" ] && VERSION="$TAG" 
           mkdir app
           go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$TAG" -o app/krazycow
