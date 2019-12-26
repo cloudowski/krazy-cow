@@ -43,7 +43,8 @@ jobs:
       - run: |
           docker build -f Dockerfile.ci -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
           docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
-          curl $@ -m 3 -s -w "%{http_code}" localhost:8080
+          sleep 5
+          curl -m 3 -w "%{http_code}" localhost:8080
 
 workflows:
   version: 2
