@@ -14,9 +14,8 @@ commands:
       - image: curlimages/curl
     steps:
       - run: |
-        docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:<< parameters.tag >>
-        curl $@ -m 3 -s -w "%{http_code}" localhost:8080
-
+          docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:<< parameters.tag >>
+          curl $@ -m 3 -s -w "%{http_code}" localhost:8080
 
 jobs:
   build-app:
