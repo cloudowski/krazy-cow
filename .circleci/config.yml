@@ -67,7 +67,7 @@ workflows:
                 at: app
           requires:
             - build-app
-            - smoke-test
+            - smoketest
           filters:
             branches:
               ignore: master
