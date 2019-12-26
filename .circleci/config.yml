@@ -28,7 +28,7 @@ workflows:
   version: 2
   build-krazycow:
     jobs:
-      - build-app
+      - build-app:
           filters:
             tags:
               only: /^[0-9]+.*/
