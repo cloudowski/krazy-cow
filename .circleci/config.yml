@@ -6,12 +6,7 @@ jobs:
 
     working_directory: /go/src/github.com/cloudowski/krazy-cow
     steps:
-      - persist_to_workspace:
-          root: .
-          paths:
-            - app/
       - checkout
-
       - run: go get -v -t -d ./...
       - run: go test -v ./...
       - run: |
@@ -22,6 +17,10 @@ jobs:
           go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$TAG" -o app/krazycow
           cp -a config web app/
           echo "Version built: $VERSION ($TAG)"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - app/
       # - store_artifacts:
       #     path: krazycow
       #     destination: krazycow
