@@ -27,9 +27,13 @@ jobs:
             - app/
   smoketest:
     docker:
-      - image: curlimages/curl
+      - image: circleci/buildpack-deps:stretch
     steps:
+      - checkout
+      - attach_workspace:
+          at: app
       - run: |
+          docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
           docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
           curl $@ -m 3 -s -w "%{http_code}" localhost:8080
 
@@ -44,19 +48,6 @@ workflows:
             branches:
               only: /.*/
       # perform tests
-      - docker/build:
-          dockerfile: Dockerfile.ci
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-          before_build:
-            - attach_workspace:
-                at: app
-          requires:
-            - build-app
-          filters:
-            tags:
-              only: /^[0-9]+.*/
-            branches:
-              only: /.*/
       - smoketest:
           filters:
             tags:
