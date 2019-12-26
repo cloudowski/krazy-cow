@@ -49,6 +49,8 @@ workflows:
               only: /.*/
       # perform tests
       - smoketest:
+          requires:
+            - build-app
           filters:
             tags:
               only: /^[0-9]+.*/
