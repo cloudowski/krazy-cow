@@ -4,14 +4,12 @@ orbs:
 version: 2.1
 
 commands:
-  smoketest:
+  check-container:
     description: "Perform smoke test using a container image"
     parameters:
       tag:
         type: string
         default: "$CIRCLE_SHA1"
-    docker:
-      - image: curlimages/curl
     steps:
       - run: |
           docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:<< parameters.tag >>
@@ -39,6 +37,12 @@ jobs:
           root: .
           paths:
             - app/
+  smoketest:
+    docker:
+      - image: curlimages/curl
+    steps:
+      - check-container:
+          tag: $CIRCLE_SHA1
 
 workflows:
   version: 2
@@ -65,7 +69,6 @@ workflows:
             branches:
               only: /.*/
       - smoketest:
-          tag: $CIRCLE_SHA1
           filters:
             tags:
               only: /^[0-9]+.*/
