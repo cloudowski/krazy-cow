@@ -52,8 +52,9 @@ workflows:
           dockerfile: Dockerfile.ci
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
           tag: dev
-          attach-workspace: true
-          workspace-root: app
+          before_build:
+            - attach_workspace:
+                at: app
       # - build-and-publish:
       #     requires:
       #       - build-app
