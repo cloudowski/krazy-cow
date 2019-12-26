@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Publish Docker image
           command: |
-            echo "$DOCKER_PASSWORD" | base64 --decode| docker login -u cloudowski --password-stdin
+            echo "$DOCKERHUB_PASSWORD" | base64 --decode| docker login -u cloudowski --password-stdin
             docker push $IMAGE_NAME:dev
 
 workflows:
