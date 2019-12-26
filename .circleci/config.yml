@@ -14,7 +14,10 @@ jobs:
           export VERSION=latest
           [ -n "$CIRCLE_TAG" ] && VERSION="$CIRCLE_TAG" 
           go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$CIRCLE_SHA1" -o krazycow
-
+          echo "Version built: $VERSION ($CIRCLE_SHA1)"
+      - store_artifacts:
+          path: krazycow
+          destination: krazycow
 # workflows:
 #   version: 2
 #   build-master:
