@@ -2,6 +2,22 @@ orbs:
   docker: circleci/docker@0.5.20
 
 version: 2.1
+
+commands:
+  smoketest:
+    description: "Perform smoke test using a container image"
+    parameters:
+      tag:
+        type: string
+        default: "$CIRCLE_SHA1"
+    docker:
+      - image: curlimages/curl
+    steps:
+      - run: |
+      docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:<< parameters.tag >>
+      curl $@ -m 3 -s -w "%{http_code}" localhost:8080
+
+
 jobs:
   build-app:
     docker:
@@ -30,6 +46,27 @@ workflows:
   build-krazycow:
     jobs:
       - build-app:
+          filters:
+            tags:
+              only: /^[0-9]+.*/
+            branches:
+              only: /.*/
+      # perform tests
+      - docker/build:
+          dockerfile: Dockerfile.ci
+          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          before_build:
+            - attach_workspace:
+                at: app
+          requires:
+            - build-app
+          filters:
+            tags:
+              only: /^[0-9]+.*/
+            branches:
+              only: /.*/
+      - smoketest:
+          tag: $CIRCLE_SHA1
           filters:
             tags:
               only: /^[0-9]+.*/
