@@ -3,5 +3,4 @@
 .vscode/
 debug
 .tags
-.ci*
 **.tgz

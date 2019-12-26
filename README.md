@@ -1,4 +1,4 @@
-[![Build Status](https://cloud.drone.io/api/badges/cloudowski/krazy-cow/status.svg)](https://cloud.drone.io/cloudowski/krazy-cow)
+[![CircleCI](https://circleci.com/gh/cloudowski/krazy-cow.svg?style=svg)](https://circleci.com/gh/cloudowski/krazy-cow)
 
 # Krazy Cow
 

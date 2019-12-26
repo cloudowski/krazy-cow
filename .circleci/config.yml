@@ -1,0 +1,86 @@
+orbs:
+  docker: circleci/docker@0.5.20
+
+version: 2.1
+
+docker-defaults: &docker-defaults
+  dockerfile: Dockerfile.ci
+  image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+  before_build:
+    - attach_workspace:
+        at: app
+
+jobs:
+  build-app:
+    docker:
+      - image: circleci/golang:1.13
+
+    working_directory: /go/src/github.com/cloudowski/krazy-cow
+    steps:
+      - checkout
+      - run: go get -v -t -d ./...
+      - run: go test -v ./...
+      - run: |
+          export VERSION=latest
+          [ -n "$CIRCLE_TAG" ] && VERSION="$CIRCLE_TAG" 
+          export COMMIT=${CIRCLE_SHA1:0:7}
+          mkdir app
+          go build -ldflags="-w -s -X main.version=$VERSION -X main.gitCommit=$COMMIT" -o app/krazycow
+          cp -a config web app/
+          echo "Version built: $VERSION ($COMMIT)"
+      - persist_to_workspace:
+          root: .
+          paths:
+            - app/
+  smoketest:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: app
+      - run: |
+          docker build -f Dockerfile.ci -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+          docker run --name test -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
+          docker run --link test curlimages/curl -s -m 3 -w "%{http_code}" -o /dev/null test:8080|grep ^200
+
+workflows:
+  version: 2
+  build-krazycow:
+    jobs:
+      - build-app:
+          filters:
+            tags:
+              only: /^[0-9]+.*/
+            branches:
+              only: /.*/
+      # perform tests
+      - smoketest:
+          requires:
+            - build-app
+          filters:
+            tags:
+              only: /^[0-9]+.*/
+            branches:
+              only: /.*/
+      # publish "dev" version
+      - docker/publish:
+          <<: *docker-defaults
+          tag: dev
+          requires:
+            - smoketest
+          filters:
+            branches:
+              ignore: master
+      # publish tagged version
+      - docker/publish:
+          <<: *docker-defaults
+          tag: "$CIRCLE_TAG,latest"
+          requires:
+            - smoketest
+          filters:
+            tags:
+              only: /^[0-9]+.*/
+            branches:
+              ignore: /.*/
