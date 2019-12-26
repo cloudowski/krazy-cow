@@ -37,12 +37,16 @@ jobs:
       - run:
           name: Build Docker image
           command: |
-            # cp -a /tmp/workspace/app .
             docker build -t $IMAGE_NAME:dev -f Dockerfile.ci .
+      - run:
+          name: Publish Docker image
+          command: |
+            echo "DOCKER_PASSWORD" | docker login -u cloudowski --password-stdin
+            docker push $IMAGE_NAME:dev
 
 workflows:
   version: 2
-  build-master:
+  build-krazycow:
     jobs:
       - build-app
       - build-and-publish:
