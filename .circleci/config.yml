@@ -43,7 +43,7 @@ jobs:
       - run: |
           docker build -f Dockerfile.ci -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
           docker run --name test -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
-          docker run --link test curlimages/curl -s -m 3 -w "%{http_code}" test:8080
+          docker run --link test curlimages/curl -s -m 3 -w "%{http_code}" -o /dev/null test:8080|grep ^200
 
 workflows:
   version: 2
