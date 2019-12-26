@@ -3,6 +3,13 @@ orbs:
 
 version: 2.1
 
+docker-defaults: &docker-defaults
+  dockerfile: Dockerfile.ci
+  image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+  before_build:
+    - attach_workspace:
+        at: app
+
 jobs:
   build-app:
     docker:
@@ -34,7 +41,7 @@ jobs:
       - attach_workspace:
           at: app
       - run: |
-          docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
+          docker build -f Dockerfile.ci -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1 .
           docker run -d -p 8080:8080 $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:$CIRCLE_SHA1
           curl $@ -m 3 -s -w "%{http_code}" localhost:8080
 
@@ -59,12 +66,8 @@ workflows:
               only: /.*/
       # publish "dev" version
       - docker/publish:
-          dockerfile: Dockerfile.ci
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          <<: *docker-defaults
           tag: dev
-          before_build:
-            - attach_workspace:
-                at: app
           requires:
             - build-app
             - smoketest
@@ -73,12 +76,8 @@ workflows:
               ignore: master
       # publish tagged version
       - docker/publish:
-          dockerfile: Dockerfile.ci
-          image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+          <<: *docker-defaults
           tag: "$CIRCLE_TAG,latest"
-          before_build:
-            - attach_workspace:
-                at: app
           requires:
             - build-app
           filters:
