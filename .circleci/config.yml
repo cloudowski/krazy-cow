@@ -29,6 +29,7 @@ workflows:
   build-krazycow:
     jobs:
       - build-app
+      # publish "dev" version
       - docker/publish:
           dockerfile: Dockerfile.ci
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
@@ -41,6 +42,7 @@ workflows:
           filters:
             branches:
               ignore: master
+      # publish tagged version
       - docker/publish:
           dockerfile: Dockerfile.ci
           image: $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
@@ -52,6 +54,6 @@ workflows:
             - build-app
           filters:
             tags:
-              only: /^[0-9].*/
+              only: /^[0-9]+.*/
             branches:
               ignore: /.*/
